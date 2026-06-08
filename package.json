@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "add:web": "pnpm dlx shadcn@latest add -c apps/web",
+    "add:mobile": "pnpm --dir apps/mobile dlx gluestack-ui@latest add --use-pnpm",
     "build": "turbo build",
     "dev:web": "pnpm --filter @chefly/web dev",
     "dev:mobile": "pnpm --filter @chefly/mobile dev",
