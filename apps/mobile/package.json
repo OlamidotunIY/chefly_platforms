@@ -3,11 +3,12 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
-    "@expo/html-elements": "^0.10.1",
+    "@expo/html-elements": "^0.12.5",
     "@expo/ui": "~56.0.16",
     "@gluestack-ui/core": "^3.0.22",
     "@gluestack-ui/utils": "^3.0.21",
-    "@legendapp/motion": "^2.5.3",
+    "@gorhom/bottom-sheet": "^5.0.0-alpha.11",
+    "@legendapp/motion": "^2.4.0",
     "expo": "~56.0.9",
     "expo-constants": "~56.0.17",
     "expo-device": "~56.0.4",
@@ -32,7 +33,7 @@
     "react-native-reanimated": "4.3.1",
     "react-native-safe-area-context": "^5.6.1",
     "react-native-screens": "4.25.2",
-    "react-native-svg": "^15.15.4",
+    "react-native-svg": "^15.12.0",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.8.3",
     "react-stately": "^3.47.0",
@@ -53,6 +54,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "ui:add": "pnpm dlx gluestack-ui@latest add --use-pnpm",
     "lint": "expo lint"
   },
   "private": true
