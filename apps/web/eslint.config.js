@@ -15,6 +15,9 @@ export default defineConfig([
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
     ],
+    parserOptions: {
+      tsconfigRootDir: __dirname,
+    },
     languageOptions: {
       globals: globals.browser,
     },

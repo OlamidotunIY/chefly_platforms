@@ -1,9 +1,9 @@
-import { PATHS } from "@/routing/Paths"
+import { PATHS } from "@/routing"
 import { authClient } from "@chefly/api"
 import { useEffect } from "react"
 import { Navigate, Outlet } from "react-router-dom"
 
-function RequireAuth()
+export const RequireAuth = () =>
 {
     const session = authClient.useSession()
 
@@ -36,4 +36,3 @@ function RequireAuth()
 
 }
 
-export default RequireAuth

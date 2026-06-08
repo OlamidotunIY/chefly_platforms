@@ -1,13 +1,5 @@
-import { cn } from "@workspace/ui/lib/utils"
-import { Button } from "@workspace/ui/components/button"
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldSeparator,
-} from "@workspace/ui/components/field"
-import { Input } from "@workspace/ui/components/input"
+import { cn } from "@workspace/ui/lib"
+import { Button, Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator, Input } from "@workspace/ui/components"
 
 export function LoginForm({
   className,
