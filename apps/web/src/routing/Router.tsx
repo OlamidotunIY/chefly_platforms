@@ -1,11 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import { PATHS } from "./Paths";
-import SignupPage from "@/features/auth/pages/SignupPage";
-import ResetPasswordPage from "@/features/auth/pages/ResetPasswordPage";
-import RequireAuth from "@/features/auth/RequireAuth";
-import { LoginPage } from "@/features/auth/pages/LoginPage";
-import { AuthLayout } from "@/layouts/AuthLayout";
-import { ForgotPasswordPage } from "@/features/auth/pages/ForgotPasswordPage";
+import { ForgotPasswordPage, LoginPage, RequireAuth, ResetPasswordPage, SignupPage } from "@/features/auth";
+import { AuthLayout } from "@/layouts";
 
 export const router = createBrowserRouter([
     {

@@ -1,8 +1,6 @@
-import { PATHS } from '@/routing/Paths'
+import { PATHS } from '@/routing'
 import { Navigate } from 'react-router-dom'
 
-function AuthPage() {
+export const AuthPage = () => {
   return <Navigate to={PATHS.auth.login} replace />
 }
-
-export default AuthPage
