@@ -7,6 +7,7 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"],
+      "@chefly/api": ["../../packages/api/src/index.ts"],
       "@workspace/ui/*": ["../../packages/ui/src/*"]
     }
   }
