@@ -53,7 +53,12 @@ export function useTheme() {
   const setTheme = useThemeStore((state) => state.setTheme);
   const toggleTheme = useThemeStore((state) => state.toggleTheme);
   const systemTheme = useColorScheme();
-  const resolvedTheme = theme === "system" ? (systemTheme ?? "light") : theme;
+  const resolvedTheme: Exclude<Theme, "system"> =
+    theme === "system"
+      ? systemTheme === "dark"
+        ? "dark"
+        : "light"
+      : theme;
 
   return { theme, resolvedTheme, setTheme, toggleTheme };
 }
