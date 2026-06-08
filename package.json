@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo dev",
+    "dev:web": "pnpm --filter @chefly/web dev",
+    "dev:mobile": "pnpm --filter @chefly/mobile dev",
     "lint": "turbo lint",
     "format": "turbo format",
     "typecheck": "turbo typecheck"
