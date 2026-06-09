@@ -1,11 +1,12 @@
 import { useWindowDimensions, type ViewProps } from 'react-native';
 import { Box } from '@/components/ui/box';
-import { BrandLoader, Logo } from './';
 import { authClient, ErrorResponse, getCurrentUser } from '@chefly/api';
 import { useEffect } from 'react';
 import { router, type Href } from 'expo-router';
 
-import { hasSeenOnboarding } from '@/lib/onboarding-storage';
+import { hasSeenOnboarding } from '../../src/lib/onboarding-storage';
+import { BrandLoader } from './BrandLoader';
+import { Logo } from './Logo';
 
 const onboardingRoute = '/onboarding' as Href;
 

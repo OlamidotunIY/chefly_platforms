@@ -1,0 +1,90 @@
+<svg width="900" height="700" viewBox="0 0 900 700" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="3D clay illustration for discovering recipes">
+  <defs>
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000000" flood-opacity="0.18"/>
+    </filter>
+    <filter id="smallShadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000000" flood-opacity="0.16"/>
+    </filter>
+    <linearGradient id="tealClay" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#55D9CB"/>
+      <stop offset="52%" stop-color="#0F8B7F"/>
+      <stop offset="100%" stop-color="#0C6F66"/>
+    </linearGradient>
+    <linearGradient id="orangeClay" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFB982"/>
+      <stop offset="55%" stop-color="#FF6B3D"/>
+      <stop offset="100%" stop-color="#E78128"/>
+    </linearGradient>
+    <linearGradient id="purpleClay" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E3B1FF"/>
+      <stop offset="100%" stop-color="#BD5BFF"/>
+    </linearGradient>
+    <linearGradient id="creamClay" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#FFE3C2"/>
+    </linearGradient>
+    <linearGradient id="goldClay" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFDDA0"/>
+      <stop offset="100%" stop-color="#FB9D4B"/>
+    </linearGradient>
+    <radialGradient id="highlight" cx="35%" cy="25%" r="60%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  
+  <ellipse cx="450" cy="625" rx="300" ry="42" fill="#000000" opacity="0.09"/>
+  <g filter="url(#softShadow)">
+    <rect x="335" y="105" width="230" height="420" rx="54" fill="url(#tealClay)"/>
+    <rect x="360" y="145" width="180" height="330" rx="34" fill="#F9FFFC"/>
+    <rect x="390" y="173" width="120" height="18" rx="9" fill="#DDF5EF"/>
+    <rect x="390" y="215" width="120" height="72" rx="24" fill="#FFE6D6"/>
+    <circle cx="425" cy="251" r="24" fill="url(#orangeClay)"/>
+    <rect x="462" y="236" width="44" height="10" rx="5" fill="#0F8B7F" opacity="0.55"/>
+    <rect x="462" y="256" width="58" height="10" rx="5" fill="#E78128" opacity="0.5"/>
+    <rect x="390" y="315" width="120" height="72" rx="24" fill="#E8FAF7"/>
+    <circle cx="425" cy="351" r="24" fill="url(#tealClay)"/>
+    <rect x="462" y="336" width="54" height="10" rx="5" fill="#0F8B7F" opacity="0.55"/>
+    <rect x="462" y="356" width="42" height="10" rx="5" fill="#FF6B3D" opacity="0.5"/>
+    <circle cx="450" cy="498" r="11" fill="#FFFFFF" opacity="0.8"/>
+  </g>
+
+  <g filter="url(#smallShadow)">
+    <rect x="168" y="232" width="142" height="108" rx="28" fill="url(#creamClay)" transform="rotate(-12 168 232)"/>
+    <circle cx="220" cy="275" r="28" fill="url(#orangeClay)"/>
+    <path d="M202 279C221 256 240 263 248 284" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round"/>
+  </g>
+
+  <g filter="url(#smallShadow)">
+    <rect x="615" y="240" width="150" height="116" rx="30" fill="url(#creamClay)" transform="rotate(14 615 240)"/>
+    <circle cx="670" cy="283" r="30" fill="url(#tealClay)"/>
+    <path d="M650 288C669 263 692 269 701 291" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round"/>
+  </g>
+
+  <g filter="url(#smallShadow)">
+    <circle cx="622" cy="430" r="82" fill="url(#orangeClay)"/>
+    <circle cx="594" cy="401" r="18" fill="#FFFFFF" opacity="0.45"/>
+    <circle cx="622" cy="430" r="50" fill="none" stroke="#FFFFFF" stroke-width="20" opacity="0.9"/>
+    <rect x="674" y="489" width="130" height="34" rx="17" fill="url(#orangeClay)" transform="rotate(42 674 489)"/>
+  </g>
+
+  <g filter="url(#smallShadow)">
+    <circle cx="270" cy="460" r="52" fill="#F4B98B"/>
+    <path d="M221 448C236 392 302 398 319 448C289 430 252 430 221 448Z" fill="#5B3427"/>
+    <circle cx="251" cy="463" r="6" fill="#3B241F"/>
+    <circle cx="289" cy="463" r="6" fill="#3B241F"/>
+    <path d="M256 487C270 499 287 498 300 485" stroke="#3B241F" stroke-width="8" stroke-linecap="round"/>
+    <path d="M210 520C240 495 303 496 333 522L318 623H225L210 520Z" fill="url(#creamClay)"/>
+    <rect x="247" y="520" width="50" height="96" rx="18" fill="url(#tealClay)"/>
+    <circle cx="240" cy="405" r="28" fill="#FFFFFF"/>
+    <circle cx="270" cy="392" r="34" fill="#FFFFFF"/>
+    <circle cx="301" cy="405" r="28" fill="#FFFFFF"/>
+  </g>
+
+  <circle cx="182" cy="164" r="28" fill="url(#tealClay)" filter="url(#smallShadow)"/>
+  <circle cx="720" cy="154" r="22" fill="url(#orangeClay)" filter="url(#smallShadow)"/>
+  <path d="M744 200C775 190 797 212 785 244C754 251 730 229 744 200Z" fill="url(#tealClay)" filter="url(#smallShadow)"/>
+  <path d="M135 386C166 376 188 398 176 430C145 437 121 415 135 386Z" fill="url(#orangeClay)" filter="url(#smallShadow)"/>
+
+</svg>
