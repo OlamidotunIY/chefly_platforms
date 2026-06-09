@@ -1,9 +1,13 @@
 import { useWindowDimensions, type ViewProps } from 'react-native';
 import { Box } from '@/components/ui/box';
 import { BrandLoader, Logo } from './';
-import { authClient, getCurrentUser } from '@chefly/api';
+import { authClient, ErrorResponse, getCurrentUser } from '@chefly/api';
 import { useEffect } from 'react';
-import { router } from 'expo-router';
+import { router, type Href } from 'expo-router';
+
+import { hasSeenOnboarding } from '@/lib/onboarding-storage';
+
+const onboardingRoute = '/onboarding' as Href;
 
 type SplashScreenProps = ViewProps & {
   logoSize?: number;
@@ -21,18 +25,60 @@ export function SplashScreen({
 
   useEffect(() =>
   {
-
-    if (session.data?.user)
+    if (session.isPending)
     {
-      getCurrentUser().then((user) =>
-      {
-        console.log('Current user:', user);
-      });
-    } else
-    {
-      router.replace('/(auth)');
+      return;
     }
-  }, [session.data?.user])
+
+    let cancelled = false;
+
+    async function resolveInitialRoute()
+    {
+      if (session.data?.user)
+      {
+        await getCurrentUser().then(({ data }) =>
+        {
+          if (!data?.data?.emailVerified)
+          {
+            router.replace('/');
+          }
+        }).catch((error: ErrorResponse) =>
+        {
+          console.error('Error fetching current user:', error.msg);
+          // If there's an error fetching the user, we can choose to route to onboarding or show an error screen.
+          if (!cancelled)
+          {
+            router.replace(onboardingRoute);
+          }
+        });
+      }
+
+      try
+      {
+        const onboardingComplete = await hasSeenOnboarding();
+
+        if (!cancelled)
+        {
+          router.replace(onboardingComplete ? '/(auth)' : onboardingRoute);
+        }
+      } catch (error)
+      {
+        console.error('Unable to read onboarding state:', error);
+
+        if (!cancelled)
+        {
+          router.replace(onboardingRoute);
+        }
+      }
+    }
+
+    void resolveInitialRoute();
+
+    return () =>
+    {
+      cancelled = true;
+    };
+  }, [session.data?.user, session.isPending])
 
 
   return (
