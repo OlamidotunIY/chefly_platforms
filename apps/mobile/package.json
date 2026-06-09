@@ -3,6 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
+    "@chefly/api": "workspace:*",
     "@expo/html-elements": "^0.12.5",
     "@expo/ui": "~56.0.16",
     "@gluestack-ui/core": "^3.0.22",

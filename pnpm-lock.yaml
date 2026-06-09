@@ -23,6 +23,9 @@ importers:
 
   apps/mobile:
     dependencies:
+      '@chefly/api':
+        specifier: workspace:*
+        version: link:../../packages/api
       '@expo/html-elements':
         specifier: ^0.12.5
         version: 0.12.5
