@@ -1,14 +1,11 @@
 import { cn } from "@workspace/ui/lib"
 import { Button, Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator, Input } from "@workspace/ui/components"
-import { authClient } from "@chefly/api"
-
-
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">)
 {
-  return (
+   return (
     <form className={cn("flex flex-col gap-6", className)} {...props}>
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
@@ -18,11 +15,11 @@ export function LoginForm({
           </p>
         </div>
         <Field>
-          <FieldLabel htmlFor="email">Email</FieldLabel>
+          <FieldLabel htmlFor="username">Username</FieldLabel>
           <Input
-            id="email"
-            type="email"
-            placeholder="m@example.com"
+            id="username"
+            type="text"
+            placeholder="dammy"
             required
             className="bg-background"
           />
