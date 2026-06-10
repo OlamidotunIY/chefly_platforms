@@ -1,9 +1,21 @@
-import { Link, Outlet } from 'react-router-dom'
+import { Navigate, Link, Outlet } from 'react-router-dom'
 
+import { authClient } from '@chefly/api'
 import { Logo } from '@/components'
+import { Loader } from '@/components/loader'
 import { PATHS } from '@/routing'
 
 export const AuthLayout = () => {
+  const session = authClient.useSession()
+
+  if (session.isPending) {
+    return <Loader />
+  }
+
+  if (session.data) {
+    return <Navigate replace to={PATHS.app.root} />
+  }
+
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">

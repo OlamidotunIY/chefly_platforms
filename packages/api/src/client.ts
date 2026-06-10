@@ -1,4 +1,11 @@
-export { client } from "./generated/client.gen";
+import { client } from "./generated/client.gen";
+
+client.setConfig({
+  baseUrl: "http://localhost:5000",
+  credentials: "include",
+});
+
+export { client };
 export {
   createClient,
   createConfig,
