@@ -1,2 +1,5 @@
+export * from "./Logo"
 export * from "./login-form"
+export * from "./signup-form"
+export * from "./social-auth-buttons"
 export * from "./theme-provider"

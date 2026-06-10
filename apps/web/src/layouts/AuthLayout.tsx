@@ -1,15 +1,19 @@
 import { Link, Outlet } from 'react-router-dom'
 
+import { Logo } from '@/components'
+import { PATHS } from '@/routing'
+
 export const AuthLayout = () => {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
-          <Link to="#" className="flex items-center gap-2 font-medium">
-            <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              {/* <GalleryVerticalEnd className="size-4" /> */}
-            </div>
-            Acme Inc.
+          <Link
+            aria-label="Chefly login"
+            className="inline-flex"
+            to={PATHS.auth.login}
+          >
+            <Logo />
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">
