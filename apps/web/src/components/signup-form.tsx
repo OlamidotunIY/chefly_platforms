@@ -1,91 +1,282 @@
-import { cn } from "@workspace/ui/lib/utils"
-import { Button } from "@workspace/ui/components/button"
 import {
+  useEffect,
+  useState,
+  type ComponentProps,
+  type FormEvent,
+} from "react"
+import { Check, LoaderCircle, X } from "lucide-react"
+import { Link, useNavigate } from "react-router-dom"
+
+import { authClient } from "@chefly/api"
+import {
+  Button,
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
-  FieldSeparator,
-} from "@workspace/ui/components/field"
-import { Input } from "@workspace/ui/components/input"
-import { PATHS } from "@/routing"
-import { Link } from "react-router-dom"
+  Input,
+} from "@workspace/ui/components"
+import { cn } from "@workspace/ui/lib"
 
-export function SignupForm({
-  className,
-  ...props
-}: React.ComponentProps<"form">) {
+import { PATHS } from "@/routing"
+import { SocialAuthButtons } from "./social-auth-buttons"
+
+type SignupFormProps = Omit<ComponentProps<"form">, "onSubmit">
+type UsernameStatus = "idle" | "checking" | "available" | "unavailable" | "invalid"
+
+const USERNAME_PATTERN = /^[a-zA-Z0-9_]+$/
+
+function validateUsername(username: string) {
+  if (username.length < 3) {
+    return "Username must be at least 3 characters."
+  }
+
+  if (username.length > 30) {
+    return "Username must be no more than 30 characters."
+  }
+
+  if (!USERNAME_PATTERN.test(username)) {
+    return "Use only letters, numbers, and underscores."
+  }
+
+  return null
+}
+
+export function SignupForm({ className, ...props }: SignupFormProps) {
+  const navigate = useNavigate()
+  const [username, setUsername] = useState("")
+  const [usernameStatus, setUsernameStatus] =
+    useState<UsernameStatus>("idle")
+  const [usernameMessage, setUsernameMessage] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    const trimmedUsername = username.trim()
+
+    if (!trimmedUsername) {
+      setUsernameStatus("idle")
+      setUsernameMessage(null)
+      return
+    }
+
+    const validationError = validateUsername(trimmedUsername)
+
+    if (validationError) {
+      setUsernameStatus("invalid")
+      setUsernameMessage(validationError)
+      return
+    }
+
+    setUsernameStatus("checking")
+    setUsernameMessage("Checking availability...")
+
+    let isCurrent = true
+    const timeout = window.setTimeout(async () => {
+      try {
+        const result = await authClient.isUsernameAvailable({
+          username: trimmedUsername,
+        })
+
+        if (!isCurrent) {
+          return
+        }
+
+        if (result.error) {
+          setUsernameStatus("invalid")
+          setUsernameMessage(result.error.message ?? "Unable to check username.")
+          return
+        }
+
+        setUsernameStatus(result.data.available ? "available" : "unavailable")
+        setUsernameMessage(
+          result.data.available
+            ? "Username is available."
+            : "Username is already taken.",
+        )
+      } catch {
+        if (isCurrent) {
+          setUsernameStatus("invalid")
+          setUsernameMessage("Unable to check username availability.")
+        }
+      }
+    }, 400)
+
+    return () => {
+      isCurrent = false
+      window.clearTimeout(timeout)
+    }
+  }, [username])
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setError(null)
+
+    const formData = new FormData(event.currentTarget)
+    const submittedUsername = String(formData.get("username") ?? "").trim()
+    const email = String(formData.get("email") ?? "").trim()
+    const password = String(formData.get("password") ?? "")
+    const validationError = validateUsername(submittedUsername)
+
+    if (validationError) {
+      setUsernameStatus("invalid")
+      setUsernameMessage(validationError)
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const availability = await authClient.isUsernameAvailable({
+        username: submittedUsername,
+      })
+
+      if (availability.error || !availability.data.available) {
+        setUsernameStatus("unavailable")
+        setUsernameMessage(
+          availability.error?.message ?? "Username is already taken.",
+        )
+        return
+      }
+
+      const result = await authClient.signUp.email({
+        email,
+        name: submittedUsername,
+        password,
+        username: submittedUsername,
+      })
+
+      if (result.error) {
+        setError(result.error.message ?? "Unable to create your account.")
+        return
+      }
+
+      navigate(PATHS.app.root, { replace: true })
+    } catch {
+      setError("Unable to reach the authentication server.")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
+    <form
+      className={cn("flex flex-col gap-6", className)}
+      onSubmit={handleSubmit}
+      {...props}
+    >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">Create your account</h1>
           <p className="text-sm text-balance text-muted-foreground">
-            Fill in the form below to create your account
+            Choose a username and enter your account details
           </p>
         </div>
+
         <Field>
-          <FieldLabel htmlFor="name">Full Name</FieldLabel>
-          <Input
-            id="name"
-            type="text"
-            placeholder="John Doe"
-            required
-            className="bg-background"
-          />
+          <FieldLabel htmlFor="username">Username</FieldLabel>
+          <div className="relative">
+            <Input
+              aria-describedby="username-status"
+              aria-invalid={
+                usernameStatus === "invalid" ||
+                usernameStatus === "unavailable"
+              }
+              autoCapitalize="none"
+              autoComplete="username"
+              className="bg-background pr-9"
+              id="username"
+              maxLength={30}
+              minLength={3}
+              name="username"
+              onChange={(event) => setUsername(event.target.value)}
+              pattern="[A-Za-z0-9_]+"
+              placeholder="chefly_user"
+              required
+              spellCheck={false}
+              type="text"
+              value={username}
+            />
+            <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+              {usernameStatus === "checking" && (
+                <LoaderCircle className="size-4 animate-spin text-muted-foreground" />
+              )}
+              {usernameStatus === "available" && (
+                <Check className="size-4 text-emerald-600" />
+              )}
+              {(usernameStatus === "invalid" ||
+                usernameStatus === "unavailable") && (
+                <X className="size-4 text-destructive" />
+              )}
+            </span>
+          </div>
+          {usernameMessage && (
+            <FieldDescription
+              className={cn(
+                usernameStatus === "available" && "text-emerald-600",
+                (usernameStatus === "invalid" ||
+                  usernameStatus === "unavailable") &&
+                  "text-destructive",
+              )}
+              id="username-status"
+            >
+              {usernameMessage}
+            </FieldDescription>
+          )}
         </Field>
+
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
           <Input
+            autoComplete="email"
+            className="bg-background"
             id="email"
-            type="email"
+            name="email"
             placeholder="m@example.com"
             required
-            className="bg-background"
+            type="email"
           />
-          <FieldDescription>
-            We&apos;ll use this to contact you. We will not share your email
-            with anyone else.
-          </FieldDescription>
         </Field>
+
         <Field>
           <FieldLabel htmlFor="password">Password</FieldLabel>
           <Input
-            id="password"
-            type="password"
-            required
+            autoComplete="new-password"
             className="bg-background"
+            id="password"
+            minLength={8}
+            name="password"
+            required
+            type="password"
           />
           <FieldDescription>
             Must be at least 8 characters long.
           </FieldDescription>
         </Field>
+
+        <FieldError>{error}</FieldError>
+
         <Field>
-          <FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
-          <Input
-            id="confirm-password"
-            type="password"
-            required
-            className="bg-background"
-          />
-          <FieldDescription>Please confirm your password.</FieldDescription>
-        </Field>
-        <Field>
-          <Button type="submit">Create Account</Button>
-        </Field>
-        <FieldSeparator>Or continue with</FieldSeparator>
-        <Field>
-          <Button variant="outline" type="button">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path
-                d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
-                fill="currentColor"
-              />
-            </svg>
-            Sign up with GitHub
+          <Button
+            disabled={
+              isSubmitting ||
+              usernameStatus === "checking" ||
+              usernameStatus === "invalid" ||
+              usernameStatus === "unavailable"
+            }
+            type="submit"
+          >
+            {isSubmitting ? "Creating account..." : "Create account"}
           </Button>
-          <FieldDescription className="px-6 text-center">
-            Already have an account? <Link to={PATHS.auth.login}>Sign in</Link>
+        </Field>
+
+        <SocialAuthButtons action="Sign up" />
+
+        <Field>
+          <FieldDescription className="text-center">
+            Already have an account?{" "}
+            <Link to={PATHS.auth.login}>Sign in</Link>
           </FieldDescription>
         </Field>
       </FieldGroup>
