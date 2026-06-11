@@ -1,7 +1,7 @@
 import { useState, type ComponentProps, type FormEvent } from "react"
 import { Link, useNavigate } from "react-router-dom"
 
-import { authClient } from "@chefly/api"
+import { authClient, resolveVerificationEmail } from "@chefly/api"
 import
 {
   Button,
@@ -52,9 +52,44 @@ export function LoginForm({ className, ...props }: LoginFormProps)
       {
         if (result.error.status === 403)
         {
+          let email = identifier
+
+          if (!identifier.includes("@"))
+          {
+            try
+            {
+              const emailPromise = resolveVerificationEmail({
+                  body: {
+                    username: identifier,
+                    password,
+                  },
+                }).then((emailResult) =>
+                {
+                  if (emailResult.error)
+                  {
+                    throw new Error("Unable to prepare email verification.")
+                  }
+
+                  return emailResult.data.data.email
+                })
+
+              toast.promise(emailPromise, {
+                loading: "Preparing email verification...",
+                success: "Verification details ready.",
+                error: "Unable to prepare email verification.",
+              })
+
+              email = await emailPromise
+            } catch
+            {
+              setError("Unable to prepare email verification.")
+              return
+            }
+          }
+
           toast.warning("Your email is not verified. Please check your inbox for a verification email.")
           navigate(PATHS.auth.verifyEmail, {
-            state: identifier.includes("@") ? { email: identifier } : undefined,
+            state: { email },
           })
           return
         }

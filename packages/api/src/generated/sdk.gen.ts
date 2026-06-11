@@ -6,6 +6,9 @@ import type {
   GetCurrentUserData,
   GetCurrentUserErrors,
   GetCurrentUserResponses,
+  ResolveVerificationEmailData,
+  ResolveVerificationEmailErrors,
+  ResolveVerificationEmailResponses,
 } from "./types.gen"
 
 export type Options<
@@ -43,4 +46,20 @@ export const getCurrentUser = <ThrowOnError extends boolean = false>(
     ],
     url: "/api/users/me",
     ...options,
+  })
+
+export const resolveVerificationEmail = <ThrowOnError extends boolean = false>(
+  options: Options<ResolveVerificationEmailData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    ResolveVerificationEmailResponses,
+    ResolveVerificationEmailErrors,
+    ThrowOnError
+  >({
+    url: "/api/users/verification-email",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
   })

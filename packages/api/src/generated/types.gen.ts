@@ -4,17 +4,22 @@ export type ClientOptions = {
   baseUrl: "https://http://localhost:5000/" | (string & {})
 }
 
-export type User = {
+export type DefaultSelection36UserPayload = {
+  role: string
+  displayUsername: string
+  username: string
+  updatedAt: string
+  createdAt: string
+  image: string
+  emailVerified: boolean
+  email: string
   id: string
   name: string
-  email: string
-  emailVerified: boolean
-  image: string | null
-  createdAt: string
-  updatedAt: string
-  username: string | null
-  displayUsername: string | null
 }
+
+export type UserModel = DefaultSelection36UserPayload
+
+export type User = UserModel
 
 export type UserResponse = {
   message: string
@@ -32,6 +37,18 @@ export type AuthSession = {
     [key: string]: unknown
   }
   [key: string]: unknown
+}
+
+export type ResolveVerificationEmailResponse = {
+  message: string
+  data: {
+    email: string
+  }
+}
+
+export type ResolveVerificationEmailRequest = {
+  username: string
+  password: string
 }
 
 export type GetCurrentUserData = {
@@ -64,3 +81,30 @@ export type GetCurrentUserResponses = {
 
 export type GetCurrentUserResponse =
   GetCurrentUserResponses[keyof GetCurrentUserResponses]
+
+export type ResolveVerificationEmailData = {
+  body: ResolveVerificationEmailRequest
+  path?: never
+  query?: never
+  url: "/api/users/verification-email"
+}
+
+export type ResolveVerificationEmailErrors = {
+  /**
+   * Invalid username or password
+   */
+  401: ErrorResponse
+}
+
+export type ResolveVerificationEmailError =
+  ResolveVerificationEmailErrors[keyof ResolveVerificationEmailErrors]
+
+export type ResolveVerificationEmailResponses = {
+  /**
+   * Ok
+   */
+  200: ResolveVerificationEmailResponse
+}
+
+export type ResolveVerificationEmailResponse2 =
+  ResolveVerificationEmailResponses[keyof ResolveVerificationEmailResponses]
