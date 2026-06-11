@@ -6,7 +6,7 @@ export const PATHS = {
     signup: "/auth/signup",
     forgotPassword: "/auth/forgot-password",
     resetPassword: "/auth/reset-password",
-    verifyEmail: "/verify-email",
+    verifyEmail: "/auth/verify-email",
   },
   app: {
     root: "/app",

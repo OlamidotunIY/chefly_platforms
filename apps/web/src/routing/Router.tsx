@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { PATHS } from "./Paths";
-import { ForgotPasswordPage, LoginPage, RequireAuth, ResetPasswordPage, SignupPage } from "@/features/auth";
+import { ForgotPasswordPage, LoginPage, RequireAuth, ResetPasswordPage, SignupPage, VerifyEmailPage } from "@/features/auth";
 import { AuthLayout } from "@/layouts";
 
 export const router = createBrowserRouter([
@@ -26,6 +26,10 @@ export const router = createBrowserRouter([
                     {
                         path: PATHS.auth.resetPassword,
                         element: <ResetPasswordPage />,
+                    },
+                    {
+                        path: PATHS.auth.verifyEmail,
+                        element: <VerifyEmailPage />,
                     },
                 ],
             },

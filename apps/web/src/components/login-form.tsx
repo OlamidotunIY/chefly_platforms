@@ -2,7 +2,8 @@ import { useState, type ComponentProps, type FormEvent } from "react"
 import { Link, useNavigate } from "react-router-dom"
 
 import { authClient } from "@chefly/api"
-import {
+import
+{
   Button,
   Field,
   FieldDescription,
@@ -10,6 +11,7 @@ import {
   FieldGroup,
   FieldLabel,
   Input,
+  toast,
 } from "@workspace/ui/components"
 import { cn } from "@workspace/ui/lib"
 
@@ -18,12 +20,14 @@ import { SocialAuthButtons } from "./social-auth-buttons"
 
 type LoginFormProps = Omit<ComponentProps<"form">, "onSubmit">
 
-export function LoginForm({ className, ...props }: LoginFormProps) {
+export function LoginForm({ className, ...props }: LoginFormProps)
+{
   const navigate = useNavigate()
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>)
+  {
     event.preventDefault()
     setError(null)
     setIsSubmitting(true)
@@ -32,26 +36,39 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
     const identifier = String(formData.get("identifier") ?? "").trim()
     const password = String(formData.get("password") ?? "")
 
-    try {
+    try
+    {
       const result = identifier.includes("@")
         ? await authClient.signIn.email({
-            email: identifier,
-            password,
-          })
+          email: identifier,
+          password,
+        })
         : await authClient.signIn.username({
-            username: identifier,
-            password,
-          })
+          username: identifier,
+          password,
+        })
 
-      if (result.error) {
+      if (result.error)
+      {
+        if (result.error.status === 403)
+        {
+          toast.warning("Your email is not verified. Please check your inbox for a verification email.")
+          navigate(PATHS.auth.verifyEmail, {
+            state: identifier.includes("@") ? { email: identifier } : undefined,
+          })
+          return
+        }
+
         setError(result.error.message ?? "Unable to sign in.")
         return
       }
 
       navigate(PATHS.app.root, { replace: true })
-    } catch {
+    } catch
+    {
       setError("Unable to reach the authentication server.")
-    } finally {
+    } finally
+    {
       setIsSubmitting(false)
     }
   }

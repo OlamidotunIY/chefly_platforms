@@ -4,11 +4,13 @@ import { createRoot } from "react-dom/client"
 import "@workspace/ui/globals.css"
 import { ThemeProvider } from "@/components"
 import { AppRouting } from "./routing"
+import { Toaster } from "@workspace/ui/components"
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
       <AppRouting />
+      <Toaster />
     </ThemeProvider>
   </StrictMode>
 )
