@@ -15,10 +15,12 @@
     "@chefly/api": "workspace:*",
     "@workspace/ui": "workspace:*",
     "better-auth": "^1.6.14",
+    "clsx": "^2.1.1",
     "lucide-react": "^1.17.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.17.0",
+    "tailwind-merge": "^3.6.0",
     "zustand": "^5.0.14"
   },
   "devDependencies": {

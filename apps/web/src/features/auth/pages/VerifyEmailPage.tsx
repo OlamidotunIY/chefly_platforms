@@ -16,18 +16,15 @@ import {
   toast,
 } from "@workspace/ui/components"
 
-import { PATHS } from "@/routing"
-
-type VerifyEmailLocationState = {
-  email?: string
-}
+import { getAuthDestination, getAuthNavigationState, PATHS } from "@/routing"
 
 const OTP_LENGTH = 6
 
 export const VerifyEmailPage = () => {
   const location = useLocation()
   const navigate = useNavigate()
-  const locationState = (location.state ?? {}) as VerifyEmailLocationState
+  const locationState = getAuthNavigationState(location.state)
+  const destination = getAuthDestination(location.state)
   const email = locationState.email
   const [otp, setOtp] = useState("")
   const [error, setError] = useState<string | null>(null)
@@ -35,7 +32,13 @@ export const VerifyEmailPage = () => {
   const [isResending, setIsResending] = useState(false)
 
   if (!email) {
-    return <Navigate replace to={PATHS.auth.login} />
+    return (
+      <Navigate
+        replace
+        state={locationState}
+        to={PATHS.auth.login}
+      />
+    )
   }
 
   const verificationEmail = email
@@ -63,7 +66,7 @@ export const VerifyEmailPage = () => {
       }
 
       toast.success("Email verified successfully.")
-      navigate(PATHS.app.root, { replace: true })
+      navigate(destination, { replace: true })
     } catch {
       setError("Unable to reach the authentication server.")
     } finally {
@@ -166,6 +169,7 @@ export const VerifyEmailPage = () => {
           </p>
           <Link
             className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            state={locationState}
             to={PATHS.auth.login}
           >
             Back to login

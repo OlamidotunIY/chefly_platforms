@@ -1,11 +1,11 @@
-import { Navigate, Link, Outlet } from 'react-router-dom'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 import { authClient } from '@chefly/api'
-import { Logo } from '@/components'
 import { Loader } from '@/components/loader'
-import { PATHS } from '@/routing'
+import { getAuthDestination } from '@/routing'
 
 export const AuthLayout = () => {
+  const location = useLocation()
   const session = authClient.useSession()
 
   if (session.isPending) {
@@ -13,21 +13,12 @@ export const AuthLayout = () => {
   }
 
   if (session.data) {
-    return <Navigate replace to={PATHS.app.root} />
+    return <Navigate replace to={getAuthDestination(location.state)} />
   }
 
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex justify-center gap-2 md:justify-start">
-          <Link
-            aria-label="Chefly login"
-            className="inline-flex"
-            to={PATHS.auth.login}
-          >
-            <Logo />
-          </Link>
-        </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
             <Outlet />

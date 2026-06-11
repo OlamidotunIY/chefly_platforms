@@ -8,15 +8,14 @@ import {
   FieldSeparator,
 } from "@workspace/ui/components"
 
-import { PATHS } from "@/routing"
-
 type SocialProvider = "apple" | "google" | "facebook"
 
 type SocialAuthButtonsProps = {
   action: "Login" | "Sign up"
+  callbackPath: string
 }
 
-export function SocialAuthButtons({ action }: SocialAuthButtonsProps) {
+export function SocialAuthButtons({ action, callbackPath }: SocialAuthButtonsProps) {
   const [activeProvider, setActiveProvider] =
     useState<SocialProvider | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -27,7 +26,7 @@ export function SocialAuthButtons({ action }: SocialAuthButtonsProps) {
 
     try {
       const result = await authClient.signIn.social({
-        callbackURL: `${window.location.origin}${PATHS.app.root}`,
+        callbackURL: new URL(callbackPath, window.location.origin).toString(),
         errorCallbackURL: window.location.href,
         provider,
       })

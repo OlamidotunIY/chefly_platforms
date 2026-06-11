@@ -1,5 +1,5 @@
 import { useState, type ComponentProps, type FormEvent } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 
 import { authClient, resolveVerificationEmail } from "@chefly/api"
 import
@@ -15,14 +15,17 @@ import
 } from "@workspace/ui/components"
 import { cn } from "@workspace/ui/lib"
 
-import { PATHS } from "@/routing"
+import { getAuthDestination, getAuthNavigationState, PATHS } from "@/routing"
 import { SocialAuthButtons } from "./social-auth-buttons"
 
 type LoginFormProps = Omit<ComponentProps<"form">, "onSubmit">
 
 export function LoginForm({ className, ...props }: LoginFormProps)
 {
+  const location = useLocation()
   const navigate = useNavigate()
+  const authState = getAuthNavigationState(location.state)
+  const destination = getAuthDestination(location.state)
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -89,7 +92,7 @@ export function LoginForm({ className, ...props }: LoginFormProps)
 
           toast.warning("Your email is not verified. Please check your inbox for a verification email.")
           navigate(PATHS.auth.verifyEmail, {
-            state: { email },
+            state: { ...authState, email },
           })
           return
         }
@@ -98,7 +101,7 @@ export function LoginForm({ className, ...props }: LoginFormProps)
         return
       }
 
-      navigate(PATHS.app.root, { replace: true })
+      navigate(destination, { replace: true })
     } catch
     {
       setError("Unable to reach the authentication server.")
@@ -140,6 +143,7 @@ export function LoginForm({ className, ...props }: LoginFormProps)
             <FieldLabel htmlFor="password">Password</FieldLabel>
             <Link
               className="ml-auto text-sm underline-offset-4 hover:underline"
+              state={authState}
               to={PATHS.auth.forgotPassword}
             >
               Forgot your password?
@@ -164,12 +168,12 @@ export function LoginForm({ className, ...props }: LoginFormProps)
           </Button>
         </Field>
 
-        <SocialAuthButtons action="Login" />
+        <SocialAuthButtons action="Login" callbackPath={destination} />
 
         <Field>
           <FieldDescription className="text-center">
             Don&apos;t have an account?{" "}
-            <Link to={PATHS.auth.signup}>Sign up</Link>
+            <Link state={authState} to={PATHS.auth.signup}>Sign up</Link>
           </FieldDescription>
         </Field>
       </FieldGroup>

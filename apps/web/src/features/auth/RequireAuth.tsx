@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react"
-import { Navigate, Outlet } from "react-router-dom"
+import { Navigate, Outlet, useLocation } from "react-router-dom"
 
-import { authClient, getCurrentUser } from "@chefly/api"
+import { authClient } from "@chefly/api"
 
 import { Loader } from "@/components/loader"
 import { PATHS } from "@/routing"
@@ -9,95 +8,41 @@ import { useUserStore } from "@/store/userStore"
 
 export const RequireAuth = () =>
 {
+    const location = useLocation()
     const session = authClient.useSession()
-    const setUser = useUserStore((state) => state.setUser)
-    const [isLoadingUser, setIsLoadingUser] = useState(false)
-    const [validatedSessionId, setValidatedSessionId] = useState<string | null>(
-        null,
+    const hydratedSessionId = useUserStore(
+        (state) => state.hydratedSessionId,
     )
-    const [validationFailed, setValidationFailed] = useState(false)
+    const user = useUserStore((state) => state.user)
+    const userStatus = useUserStore((state) => state.status)
 
-    useEffect(() =>
-    {
-        if (!session.data)
-        {
-            setUser(null)
-            setValidatedSessionId(null)
-            setValidationFailed(false)
-            setIsLoadingUser(false)
-            return
-        }
-
-        let isCurrent = true
-
-        async function loadCurrentUser()
-        {
-            setIsLoadingUser(true)
-            setValidationFailed(false)
-
-            try
-            {
-                const result = await getCurrentUser()
-                const user = result.data?.data
-
-                if (!isCurrent)
-                {
-                    return
-                }
-
-                if (!user)
-                {
-                    setUser(null)
-                    setValidatedSessionId(null)
-                    setValidationFailed(true)
-                    await authClient.signOut()
-                    return
-                }
-
-                setUser(user)
-                setValidatedSessionId(session?.data?.user?.id ?? null)
-            } catch
-            {
-                if (isCurrent)
-                {
-                    setUser(null)
-                    setValidatedSessionId(null)
-                    setValidationFailed(true)
-                    await authClient.signOut()
-                }
-            } finally
-            {
-                if (isCurrent)
-                {
-                    setIsLoadingUser(false)
-                }
-            }
-        }
-
-        void loadCurrentUser()
-
-        return () =>
-        {
-            isCurrent = false
-        }
-    }, [session.data?.user.id, setUser])
-
-    if (session.isPending)
+    if (
+        session.isPending ||
+        userStatus === "idle" ||
+        userStatus === "loading"
+    )
     {
         return <Loader />
     }
 
-    if (!session.data || validationFailed)
+    if (!session.data)
     {
-        return <Navigate replace to={PATHS.auth.login} />
+        return (
+            <Navigate
+                replace
+                state={{ from: location }}
+                to={PATHS.auth.login}
+            />
+        )
     }
 
     if (
-        isLoadingUser ||
-        validatedSessionId !== session?.data?.user.id
+        userStatus === "error" ||
+        !user ||
+        hydratedSessionId !== session.data.user.id
     )
     {
-        return <Loader />
+        return <div>Unable to load your account. Please refresh the page.</div>
     }
 
     return <Outlet />

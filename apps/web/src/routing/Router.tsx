@@ -1,16 +1,25 @@
 import { createBrowserRouter } from "react-router-dom";
 import { PATHS } from "./Paths";
-import { ForgotPasswordPage, LoginPage, RequireAuth, ResetPasswordPage, SignupPage, VerifyEmailPage } from "@/features/auth";
-import { AuthLayout } from "@/layouts";
+import { AuthPage, ForgotPasswordPage, LoginPage, RequireAuth, ResetPasswordPage, SignupPage, VerifyEmailPage } from "@/features/auth";
+import { AuthLayout, RootLayout } from "@/layouts";
 
 export const router = createBrowserRouter([
     {
         path: PATHS.root,
+        element: <RootLayout />,
         children: [
+            {
+                index: true,
+                element: <div>App</div>,
+            },
             {
                 path: PATHS.auth.root,
                 element: <AuthLayout />,
                 children: [
+                    {
+                        index: true,
+                        element: <AuthPage />,
+                    },
                     {
                         path: PATHS.auth.login,
                         element: <LoginPage />,
@@ -34,12 +43,11 @@ export const router = createBrowserRouter([
                 ],
             },
             {
-                path: PATHS.root,
                 element: <RequireAuth />,
                 children: [
                     {
-                        path: PATHS.app.root,
-                        element: <div>App</div>,
+                        path: PATHS.app.account,
+                        element: <div>Account</div>,
                     }
                 ]
             }

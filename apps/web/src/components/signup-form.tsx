@@ -5,7 +5,7 @@ import {
   type FormEvent,
 } from "react"
 import { Check, LoaderCircle, X } from "lucide-react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 
 import { authClient } from "@chefly/api"
 import {
@@ -19,7 +19,7 @@ import {
 } from "@workspace/ui/components"
 import { cn } from "@workspace/ui/lib"
 
-import { PATHS } from "@/routing"
+import { getAuthDestination, getAuthNavigationState, PATHS } from "@/routing"
 import { SocialAuthButtons } from "./social-auth-buttons"
 
 type SignupFormProps = Omit<ComponentProps<"form">, "onSubmit">
@@ -44,7 +44,10 @@ function validateUsername(username: string) {
 }
 
 export function SignupForm({ className, ...props }: SignupFormProps) {
+  const location = useLocation()
   const navigate = useNavigate()
+  const authState = getAuthNavigationState(location.state)
+  const destination = getAuthDestination(location.state)
   const [username, setUsername] = useState("")
   const [usernameStatus, setUsernameStatus] =
     useState<UsernameStatus>("idle")
@@ -152,7 +155,10 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
         return
       }
 
-      navigate(PATHS.app.root, { replace: true })
+      navigate(PATHS.auth.verifyEmail, {
+        replace: true,
+        state: { ...authState, email },
+      })
     } catch {
       setError("Unable to reach the authentication server.")
     } finally {
@@ -271,12 +277,12 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
           </Button>
         </Field>
 
-        <SocialAuthButtons action="Sign up" />
+        <SocialAuthButtons action="Sign up" callbackPath={destination} />
 
         <Field>
           <FieldDescription className="text-center">
             Already have an account?{" "}
-            <Link to={PATHS.auth.login}>Sign in</Link>
+            <Link state={authState} to={PATHS.auth.login}>Sign in</Link>
           </FieldDescription>
         </Field>
       </FieldGroup>
