@@ -34,6 +34,12 @@ export const VerifyEmailPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isResending, setIsResending] = useState(false)
 
+  if (!email) {
+    return <Navigate replace to={PATHS.auth.login} />
+  }
+
+  const verificationEmail = email
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError(null)
@@ -47,7 +53,7 @@ export const VerifyEmailPage = () => {
 
     try {
       const result = await authClient.emailOtp.verifyEmail({
-        email,
+        email: verificationEmail,
         otp,
       })
 
@@ -71,7 +77,7 @@ export const VerifyEmailPage = () => {
 
     try {
       const result = await authClient.emailOtp.sendVerificationOtp({
-        email,
+        email: verificationEmail,
         type: "email-verification",
       })
 
@@ -87,10 +93,6 @@ export const VerifyEmailPage = () => {
     } finally {
       setIsResending(false)
     }
-  }
-
-  if (!email) {
-    return <Navigate replace to={PATHS.auth.login} />
   }
 
   return (
