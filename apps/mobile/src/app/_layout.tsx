@@ -3,7 +3,7 @@ import { Slot } from 'expo-router';
 
 export default function RootLayout() {
   return (
-    <ThemeProvider>
+    <ThemeProvider defaultMode="system">
       <Slot />
     </ThemeProvider>
   );

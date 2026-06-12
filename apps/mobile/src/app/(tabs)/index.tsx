@@ -1,7 +1,7 @@
 import { useTheme } from '@/components/theme';
 import { Text, View } from 'react-native';
 
-export default function LoginScreen() {
+export default function HomeScreen() {
   const { colors, tokens } = useTheme();
 
   return (
@@ -17,10 +17,10 @@ export default function LoginScreen() {
           color: colors.foreground,
           fontSize: tokens.typography.headline,
         }}>
-        Login
+        Chefly
       </Text>
       <Text style={{ color: colors.foreground }}>
-        This is the login screen scaffold.
+        This is the authenticated tabs scaffold.
       </Text>
     </View>
   );

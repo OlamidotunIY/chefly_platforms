@@ -11,6 +11,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import { useTheme } from '../theme';
+
 const dots = [
   { angle: -90, delay: 0, tone: 'primary' },
   { angle: 0, delay: 130, tone: 'secondary' },
@@ -21,11 +23,11 @@ const dots = [
 type LoaderDotProps = {
   angle: number;
   delay: number;
+  color: string;
   size: number;
-  tone: (typeof dots)[number]['tone'];
 };
 
-function LoaderDot({ angle, delay, size, tone }: LoaderDotProps) {
+function LoaderDot({ angle, color, delay, size }: LoaderDotProps) {
   const pulse = useSharedValue(0.45);
   const dotSize = size * 0.16;
   const radius = size * 0.32;
@@ -75,15 +77,12 @@ function LoaderDot({ angle, delay, size, tone }: LoaderDotProps) {
       ]}
     >
       <View
-        className={
-          tone === 'primary'
-            ? 'h-full w-full rounded-full bg-primary-500'
-            : tone === 'secondary'
-              ? 'h-full w-full rounded-full bg-secondary-500'
-              : tone === 'primarySoft'
-                ? 'h-full w-full rounded-full bg-primary-300'
-                : 'h-full w-full rounded-full bg-secondary-300'
-        }
+        style={{
+          width: '100%',
+          height: '100%',
+          borderRadius: dotSize / 2,
+          backgroundColor: color,
+        }}
       />
     </Animated.View>
   );
@@ -94,20 +93,32 @@ type BrandLoaderProps = {
 };
 
 export function BrandLoader({ size = 56 }: BrandLoaderProps) {
+  const { colors } = useTheme();
+  const dotColors = {
+    primary: colors.brandPrimary,
+    secondary: colors.brandSecondary,
+    primarySoft: colors.accent,
+    secondarySoft: colors.brandTertiary,
+  } as const;
+
   return (
     <View
       accessibilityLabel="Loading"
       accessibilityRole="progressbar"
-      className="items-center justify-center"
-      style={{ width: size, height: size }}
+      style={{
+        width: size,
+        height: size,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
     >
       {dots.map((dot) => (
         <LoaderDot
           angle={dot.angle}
+          color={dotColors[dot.tone]}
           delay={dot.delay}
           key={dot.angle}
           size={size}
-          tone={dot.tone}
         />
       ))}
     </View>
