@@ -1,4 +1,9 @@
 import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider as NavigationThemeProvider,
+} from 'expo-router';
+import {
   createContext,
   type PropsWithChildren,
   useCallback,
@@ -70,7 +75,13 @@ export function ThemeProvider({ children, defaultMode = 'system' }: ThemeProvide
     [resolvedTheme, setThemeMode, themeMode],
   );
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  const navigationTheme = resolvedTheme === 'dark' ? DarkTheme : DefaultTheme;
+
+  return (
+    <ThemeContext.Provider value={value}>
+      <NavigationThemeProvider value={navigationTheme}>{children}</NavigationThemeProvider>
+    </ThemeContext.Provider>
+  );
 }
 
 export function useTheme() {

@@ -6,6 +6,12 @@
       "@/*": [
         "./src/*"
       ],
+      "@mobile-ui/*": [
+        "./components/ui/*"
+      ],
+      "@mobile-theme/*": [
+        "./components/theme/*"
+      ],
       "@/assets/*": [
         "./assets/*"
       ]

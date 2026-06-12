@@ -6,6 +6,7 @@ const sharedColors = {
   primary: '#00c896',
   primaryForeground: '#0f1115',
   ring: '#00c896',
+  transparent: 'transparent',
 } as const;
 
 export const colorSchemes = {

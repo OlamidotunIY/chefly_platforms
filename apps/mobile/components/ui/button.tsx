@@ -12,7 +12,7 @@ export function Button({ style, variant = 'filled', ...props }: ButtonProps) {
       ? { backgroundColor: colors.primary }
       : variant === 'outlined'
         ? { backgroundColor: colors.background, borderColor: colors.border, borderWidth: 1 }
-        : { backgroundColor: 'transparent' };
+        : { backgroundColor: colors.transparent };
 
   return (
     <ExpoButton
