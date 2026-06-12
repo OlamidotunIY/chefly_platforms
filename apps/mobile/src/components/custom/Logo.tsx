@@ -1,30 +1,32 @@
-// import { Image, type ImageProps } from 'expo-image';
+import { Image, type ImageProps } from 'expo-image';
 
+import { useTheme } from '../theme';
 
-// const logoSources = {
-//   light: require('@/assets/images/Logo/chefly_dark.png'),
-//   dark: require('@/assets/images/Logo/chefly_light.png'),
-// } as const;
+const logoSources = {
+  light: require('../../assets/images/Logo/chefly_light.svg'),
+  dark: require('../../assets/images/Logo/chefly_dark.svg'),
+} as const;
 
-// type LogoProps = Omit<ImageProps, 'source'> & {
-//   size?: number;
-// };
+export type LogoProps = Omit<ImageProps, 'source'> & {
+  size?: number;
+};
 
-// export function Logo({
-//   size = 120,
-//   style,
-//   contentFit = 'contain',
-//   ...props
-// }: LogoProps) {
-//   const { resolvedTheme } = useTheme();
+export function Logo({
+  size = 120,
+  style,
+  contentFit = 'contain',
+  accessibilityLabel = 'Chefly',
+  ...props
+}: LogoProps) {
+  const { resolvedTheme } = useTheme();
 
-//   return (
-//     <Image
-//       accessibilityLabel="Chefly"
-//       contentFit={contentFit}
-//       source={logoSources[resolvedTheme]}
-//       style={[{ width: size, height: size }, style]}
-//       {...props}
-//     />
-//   );
-// }
+  return (
+    <Image
+      accessibilityLabel={accessibilityLabel}
+      contentFit={contentFit}
+      source={logoSources[resolvedTheme]}
+      style={[{ width: size, height: size }, style]}
+      {...props}
+    />
+  );
+}

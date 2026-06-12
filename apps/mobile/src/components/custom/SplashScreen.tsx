@@ -1,96 +1,110 @@
-// import { useWindowDimensions, type ViewProps } from 'react-native';
-// import { Box } from '@/components/ui/box';
-// import { authClient, ErrorResponse, getCurrentUser } from '@chefly/api';
-// import { useEffect } from 'react';
-// import { router, type Href } from 'expo-router';
+import { authClient, getCurrentUser } from '@chefly/api';
+import { router, type Href } from 'expo-router';
+import { useEffect } from 'react';
+import { View, useWindowDimensions, type ViewProps } from 'react-native';
 
-// import { hasSeenOnboarding } from '../../lib/onboarding-storage';
-// import { BrandLoader } from './BrandLoader';
-// import { Logo } from './Logo';
+import { hasSeenOnboarding } from '../../lib/onboarding-storage';
+import { useTheme } from '../theme';
+import { Column, Host, RNHostView, Spacer } from '../ui';
+import { BrandLoader } from './BrandLoader';
+import { Logo } from './Logo';
 
-// const onboardingRoute = '/onboarding' as Href;
+const authenticatedRoute = '/(auth)' as Href;
+const onboardingRoute = '/onboarding' as Href;
+const verificationRoute = '/' as Href;
 
-// type SplashScreenProps = ViewProps & {
-//   logoSize?: number;
-// };
+export type SplashScreenProps = ViewProps & {
+  logoSize?: number;
+  loaderSize?: number;
+};
 
-// export function SplashScreen({
-//   logoSize,
-//   className,
-//   ...props
-// }: SplashScreenProps & { className?: string })
-// {
-//   const { width } = useWindowDimensions();
-//   const responsiveLogoSize = Math.min(width * 0.60, 240);
-//   const session = authClient.useSession();
+export function SplashScreen({
+  logoSize,
+  loaderSize = 56,
+  style,
+  ...props
+}: SplashScreenProps) {
+  const { width } = useWindowDimensions();
+  const { colors, tokens } = useTheme();
+  const session = authClient.useSession();
+  const responsiveLogoSize = Math.min(width * 0.6, 240);
 
-//   useEffect(() =>
-//   {
-//     if (session.isPending)
-//     {
-//       return;
-//     }
+  useEffect(() => {
+    if (session.isPending) {
+      return;
+    }
 
-//     let cancelled = false;
+    let cancelled = false;
 
-//     async function resolveInitialRoute()
-//     {
-//       if (session.data?.user)
-//       {
-//         await getCurrentUser().then(({ data }) =>
-//         {
-//           if (!data?.data?.emailVerified)
-//           {
-//             router.replace('/');
-//           }
-//         }).catch((error: ErrorResponse) =>
-//         {
-//           console.error('Error fetching current user:', error.msg);
-//           // If there's an error fetching the user, we can choose to route to onboarding or show an error screen.
-//           if (!cancelled)
-//           {
-//             router.replace(onboardingRoute);
-//           }
-//         });
-//       }
+    async function replaceRoute(route: Href) {
+      if (!cancelled) {
+        router.replace(route);
+      }
+    }
 
-//       try
-//       {
-//         const onboardingComplete = await hasSeenOnboarding();
+    async function resolveInitialRoute() {
+      try {
+        const onboardingComplete = await hasSeenOnboarding();
 
-//         if (!cancelled)
-//         {
-//           router.replace(onboardingComplete ? '/(auth)' : onboardingRoute);
-//         }
-//       } catch (error)
-//       {
-//         console.error('Unable to read onboarding state:', error);
+        if (!onboardingComplete) {
+          await replaceRoute(onboardingRoute);
+          return;
+        }
 
-//         if (!cancelled)
-//         {
-//           router.replace(onboardingRoute);
-//         }
-//       }
-//     }
+        if (!session.data?.user) {
+          await replaceRoute(authenticatedRoute);
+          return;
+        }
 
-//     void resolveInitialRoute();
+        const { data, error } = await getCurrentUser();
 
-//     return () =>
-//     {
-//       cancelled = true;
-//     };
-//   }, [session.data?.user, session.isPending])
+        if (error) {
+          console.error('Unable to load the current user:', error);
+          await replaceRoute(authenticatedRoute);
+          return;
+        }
 
+        await replaceRoute(
+          data?.data.emailVerified ? authenticatedRoute : verificationRoute,
+        );
+      } catch (error) {
+        console.error('Unable to resolve the initial app route:', error);
+        await replaceRoute(onboardingRoute);
+      }
+    }
 
-//   return (
-//     <Box
-//       className={`flex-1 items-center justify-center bg-background-0 ${className ?? ''}`}
-//       {...props}
-//     >
-//       <Logo size={logoSize ?? responsiveLogoSize} />
-//       <Box className="absolute bottom-24">
-//         <BrandLoader />
-//       </Box>
-//     </Box>
-//   );
-// }
+    void resolveInitialRoute();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session.data?.user, session.isPending]);
+
+  return (
+    <Host
+      ignoreSafeArea="all"
+      style={[{ flex: 1, backgroundColor: colors.background }, style]}
+      useViewportSizeMeasurement
+      {...props}>
+      <Column
+        alignment="center"
+        style={{
+          width: '100%',
+          height: '100%',
+          paddingHorizontal: tokens.spacing.xl,
+          paddingVertical: tokens.spacing.xxxl,
+        }}>
+        <Spacer flexible />
+        <RNHostView matchContents>
+          <Logo size={logoSize ?? responsiveLogoSize} />
+        </RNHostView>
+        <Spacer flexible />
+        <RNHostView matchContents>
+          <View>
+            <BrandLoader size={loaderSize} />
+          </View>
+        </RNHostView>
+      </Column>
+    </Host>
+  );
+}

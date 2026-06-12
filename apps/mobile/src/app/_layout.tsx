@@ -1,12 +1,10 @@
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
-import { ThemeProvider } from '../../components/theme';
+import { ThemeProvider } from '@/components/theme';
+import { Slot } from 'expo-router';
 
-export default function TabLayout() {
+export default function RootLayout() {
   return (
     <ThemeProvider>
-      <AnimatedSplashOverlay />
-      <AppTabs />
+      <Slot />
     </ThemeProvider>
   );
 }

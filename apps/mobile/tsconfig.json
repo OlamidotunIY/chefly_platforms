@@ -7,13 +7,13 @@
         "./src/*"
       ],
       "@mobile-ui/*": [
-        "./components/ui/*"
+        "./src/components/ui/*"
       ],
       "@mobile-theme/*": [
-        "./components/theme/*"
+        "./src/components/theme/*"
       ],
       "@/assets/*": [
-        "./assets/*"
+        "./src/assets/*"
       ]
     }
   },
