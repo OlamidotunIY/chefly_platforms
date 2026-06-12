@@ -1,0 +1,19 @@
+{
+  "name": "@chefly/store",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@chefly/api": "workspace:*",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "typescript": "~6"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

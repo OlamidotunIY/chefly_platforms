@@ -1,7 +1,7 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 import { authClient } from '@chefly/api'
-import { Loader } from '@/components/loader'
+import { Loader, PageContainer } from '@/components'
 import { getAuthDestination } from '@/routing'
 
 export const AuthLayout = () => {
@@ -18,13 +18,13 @@ export const AuthLayout = () => {
 
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
-      <div className="flex flex-col gap-4 p-6 md:p-10">
+      <PageContainer className="flex max-w-none flex-col gap-4 py-6 md:py-10">
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
             <Outlet />
           </div>
         </div>
-      </div>
+      </PageContainer>
       <div className="relative hidden bg-muted lg:block">
         <img
           src="/placeholder.svg"

@@ -51,6 +51,47 @@ export type ResolveVerificationEmailRequest = {
   password: string
 }
 
+export type DefaultSelection36SubCategoryPayload = {
+  categoryId: string
+  group: string
+  description: string
+  slug: string
+  updatedAt: string
+  createdAt: string
+  id: string
+  name: string
+}
+
+export type SubCategoryModel = DefaultSelection36SubCategoryPayload
+
+export type SubCategory = SubCategoryModel
+
+export type DefaultSelection36CategoryPayload = {
+  description: string
+  slug: string
+  updatedAt: string
+  createdAt: string
+  id: string
+  name: string
+}
+
+export type CategoryModel = DefaultSelection36CategoryPayload
+
+export type RecipeCategory = {
+  description: string
+  slug: string
+  updatedAt: string
+  createdAt: string
+  id: string
+  name: string
+  subCategories: Array<SubCategory>
+}
+
+export type RecipeCategoryResponse = {
+  message: string
+  data: Array<RecipeCategory>
+}
+
 export type GetCurrentUserData = {
   body?: never
   path?: never
@@ -108,3 +149,34 @@ export type ResolveVerificationEmailResponses = {
 
 export type ResolveVerificationEmailResponse2 =
   ResolveVerificationEmailResponses[keyof ResolveVerificationEmailResponses]
+
+export type GetRecipeCategoryData = {
+  body?: never
+  path?: never
+  query?: never
+  url: "/api/recipe/category"
+}
+
+export type GetRecipeCategoryErrors = {
+  /**
+   * No recipe categories found
+   */
+  404: ErrorResponse
+  /**
+   * Unable to fetch recipe categories
+   */
+  500: ErrorResponse
+}
+
+export type GetRecipeCategoryError =
+  GetRecipeCategoryErrors[keyof GetRecipeCategoryErrors]
+
+export type GetRecipeCategoryResponses = {
+  /**
+   * Ok
+   */
+  200: RecipeCategoryResponse
+}
+
+export type GetRecipeCategoryResponse =
+  GetRecipeCategoryResponses[keyof GetRecipeCategoryResponses]

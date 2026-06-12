@@ -15,7 +15,7 @@ export const ChefButton = ({ isChef, onClick, onLearnMore }: ChefButtonprops) =>
         <div className=''>
             {isChef ? <Tooltip>
                 <TooltipTrigger asChild>
-                    <Button variant={"ghost"} className='hover:text-primary hover:bg-transparent'>
+                    <Button variant={"ghost"} className='hover:text-primary hover:bg-transparent px-0'>
                         Become a Chef
                     </Button>
                 </TooltipTrigger>
@@ -27,9 +27,16 @@ export const ChefButton = ({ isChef, onClick, onLearnMore }: ChefButtonprops) =>
                         Learn More
                     </Button>
                 </TooltipContent>
-            </Tooltip> : <Button variant={"ghost"} className='hover:text-primary hover:bg-transparent'>
-                Switch to Chef Mode
-            </Button>}
+            </Tooltip> : (
+                <div className='flex flex-row space-x-5'>
+                    <Button variant={"ghost"} className='hover:text-primary hover:bg-transparent px-0 normal-case font-light text-sm'>
+                        Chef
+                    </Button>
+                    <Button variant={"ghost"} className='hover:text-primary hover:bg-transparent px-0 normal-case font-light text-sm'>
+                        My recipes
+                    </Button>
+                </div>
+            )}
         </div>
     )
 }

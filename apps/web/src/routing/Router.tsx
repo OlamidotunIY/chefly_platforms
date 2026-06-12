@@ -2,6 +2,9 @@ import { createBrowserRouter } from "react-router-dom";
 import { PATHS } from "./Paths";
 import { AuthPage, ForgotPasswordPage, LoginPage, RequireAuth, ResetPasswordPage, SignupPage, VerifyEmailPage } from "@/features/auth";
 import { AuthLayout, RootLayout } from "@/layouts";
+import { PageContainer } from "@/components";
+import { HomePage } from "@/features/home/HomePage";
+import { CategoryPage } from "@/features/categories";
 
 export const router = createBrowserRouter([
     {
@@ -10,7 +13,15 @@ export const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <div>App</div>,
+                Component: HomePage,
+            },
+            {
+                path: PATHS.categories.root,
+                Component: CategoryPage,
+            },
+            {
+                path: PATHS.categories.detail,
+                Component: CategoryPage,
             },
             {
                 path: PATHS.auth.root,
@@ -47,7 +58,11 @@ export const router = createBrowserRouter([
                 children: [
                     {
                         path: PATHS.app.account,
-                        element: <div>Account</div>,
+                        element: (
+                            <PageContainer className="py-6">
+                                Account
+                            </PageContainer>
+                        ),
                     }
                 ]
             }

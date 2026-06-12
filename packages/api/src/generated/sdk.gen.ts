@@ -6,6 +6,9 @@ import type {
   GetCurrentUserData,
   GetCurrentUserErrors,
   GetCurrentUserResponses,
+  GetRecipeCategoryData,
+  GetRecipeCategoryErrors,
+  GetRecipeCategoryResponses,
   ResolveVerificationEmailData,
   ResolveVerificationEmailErrors,
   ResolveVerificationEmailResponses,
@@ -63,3 +66,12 @@ export const resolveVerificationEmail = <ThrowOnError extends boolean = false>(
       ...options.headers,
     },
   })
+
+export const getRecipeCategory = <ThrowOnError extends boolean = false>(
+  options?: Options<GetRecipeCategoryData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    GetRecipeCategoryResponses,
+    GetRecipeCategoryErrors,
+    ThrowOnError
+  >({ url: "/api/recipe/category", ...options })

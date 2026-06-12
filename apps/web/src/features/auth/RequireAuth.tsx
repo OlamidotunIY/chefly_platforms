@@ -1,10 +1,10 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom"
 
 import { authClient } from "@chefly/api"
+import { useUserStore } from "@chefly/store"
 
 import { Loader } from "@/components/loader"
 import { PATHS } from "@/routing"
-import { useUserStore } from "@/store/userStore"
 
 export const RequireAuth = () =>
 {

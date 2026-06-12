@@ -1,13 +1,22 @@
 import { useEffect } from "react"
 import { Outlet } from "react-router-dom"
 
-import { authClient, getCurrentUser } from "@chefly/api"
+import
+    {
+        authClient,
+        getCurrentUser,
+        getRecipeCategory,
+    } from "@chefly/api"
+import { useCategoryStore, useUserStore } from "@chefly/store"
 
-import { useUserStore } from "@/store/userStore"
 import { Header } from './header/MainHeader'
+import { MainCategory } from "./category/MainCategory"
+import { useDocumentTitle } from "@/components"
 
 const USER_LOAD_ATTEMPTS = 3
 const USER_LOAD_RETRY_DELAY_MS = 500
+const CATEGORY_LOAD_ATTEMPTS = 3
+const CATEGORY_LOAD_RETRY_DELAY_MS = 500
 
 function wait(ms: number): Promise<void>
 {
@@ -16,12 +25,75 @@ function wait(ms: number): Promise<void>
 
 export const RootLayout = () =>
 {
+    useDocumentTitle()
     const session = authClient.useSession()
     const setHydratedSessionId = useUserStore(
         (state) => state.setHydratedSessionId,
     )
     const setStatus = useUserStore((state) => state.setStatus)
     const setUser = useUserStore((state) => state.setUser)
+    const setCategories = useCategoryStore((state) => state.setCategories)
+    const setCategoryStatus = useCategoryStore((state) => state.setStatus)
+
+    useEffect(() =>
+    {
+        let isCurrent = true
+
+        async function loadCategories()
+        {
+            setCategoryStatus("loading")
+
+            for (
+                let attempt = 1;
+                attempt <= CATEGORY_LOAD_ATTEMPTS;
+                attempt++
+            )
+            {
+                try
+                {
+                    const result = await getRecipeCategory()
+                    const categories = result.data?.data
+
+                    if (!isCurrent)
+                    {
+                        return
+                    }
+
+                    if (categories)
+                    {
+                        setCategories(categories)
+                        setCategoryStatus("ready")
+                        return
+                    }
+                } catch
+                {
+                    if (!isCurrent)
+                    {
+                        return
+                    }
+                }
+
+                if (attempt < CATEGORY_LOAD_ATTEMPTS)
+                {
+                    await wait(
+                        CATEGORY_LOAD_RETRY_DELAY_MS * 2 ** (attempt - 1),
+                    )
+                }
+            }
+
+            if (isCurrent)
+            {
+                setCategoryStatus("error")
+            }
+        }
+
+        void loadCategories()
+
+        return () =>
+        {
+            isCurrent = false
+        }
+    }, [setCategories, setCategoryStatus])
 
     useEffect(() =>
     {
@@ -104,7 +176,12 @@ export const RootLayout = () =>
 
     return (
         <div className='flex flex-col w-screen h-screen overflow-x-hidden overflow-y-auto'>
-            <Header />
+            <div>
+                <Header />
+                <div className="hidden lg:block">
+                    <MainCategory />
+                </div>
+            </div>
             <Outlet />
         </div>
     )

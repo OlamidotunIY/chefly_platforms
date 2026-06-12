@@ -1,7 +1,11 @@
-import type { Location } from "react-router-dom"
+import { generatePath, type Location } from "react-router-dom"
 
 export const PATHS = {
   root: "/",
+  categories: {
+    root: "/categories/:categorySlug",
+    detail: "/categories/:categorySlug/:subCategorySlug",
+  },
   auth: {
     root: "/auth",
     login: "/auth/login",
@@ -14,6 +18,23 @@ export const PATHS = {
     root: "/",
     account: "/account",
   },
+}
+
+export function getCategoryPath(
+  categorySlug: string,
+  subCategorySlug?: string,
+): string {
+  return generatePath(
+    subCategorySlug
+      ? PATHS.categories.detail
+      : PATHS.categories.root,
+    {
+      categorySlug: encodeURIComponent(categorySlug),
+      subCategorySlug: subCategorySlug
+        ? encodeURIComponent(subCategorySlug)
+        : undefined,
+    },
+  )
 }
 
 export type AuthNavigationState = {
