@@ -1,27 +1,23 @@
 import { useTheme } from '@/components/theme';
-import { Text, View } from 'react-native';
+import { Button, Text } from '@/components/ui';
+import { Screen } from '@/components/ui/screen';
 
 export default function HomeScreen() {
   const { colors, tokens } = useTheme();
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        padding: tokens.spacing.xl,
-        backgroundColor: colors.background,
-      }}>
+    <Screen>
       <Text
-        style={{
-          color: colors.foreground,
+        textStyle={{
           fontSize: tokens.typography.headline,
+          fontWeight: '700',
         }}>
         Chefly
       </Text>
-      <Text style={{ color: colors.foreground }}>
-        This is the authenticated tabs scaffold.
+      <Text textStyle={{ color: colors.mutedForeground }}>
+        Your authenticated home screen is ready.
       </Text>
-    </View>
+      <Button label="Explore recipes" />
+    </Screen>
   );
 }

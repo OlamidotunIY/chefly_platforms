@@ -27,6 +27,7 @@ export { Progress, type ProgressProps } from './progress';
 export { RNHostView, type RNHostViewProps } from './rn-host-view';
 export { Row, type RowProps } from './row';
 export { ScrollView, type ScrollViewProps } from './scroll-view';
+export { Screen, type ScreenProps } from './screen';
 export { SearchBar, type SearchBarProps } from './search-bar';
 export {
   SegmentedButton,

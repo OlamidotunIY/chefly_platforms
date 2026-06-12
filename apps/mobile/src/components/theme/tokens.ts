@@ -3,8 +3,9 @@ export type ThemeMode = ResolvedTheme | 'system';
 
 const sharedColors = {
   brandPrimary: '#00c896',
+  mediaForeground: '#f8f9fa',
   primary: '#00c896',
-  primaryForeground: '#0f1115',
+  primaryForeground: '#ffffff',
   ring: '#00c896',
   transparent: 'transparent',
 } as const;
@@ -83,7 +84,9 @@ export const tokens = {
     label: 14,
     title: 20,
     headline: 28,
+    hero: 44,
     lineHeightBody: 24,
+    lineHeightHero: 48,
   },
   control: {
     height: 48,

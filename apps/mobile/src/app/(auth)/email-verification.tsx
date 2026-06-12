@@ -1,27 +1,24 @@
 import { useTheme } from '@/components/theme';
-import { Text, View } from 'react-native';
+import { Button, Text } from '@/components/ui';
+import { Screen } from '@/components/ui/screen';
 
 export default function EmailVerificationScreen() {
   const { colors, tokens } = useTheme();
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        padding: tokens.spacing.xl,
-        backgroundColor: colors.background,
-      }}>
+    <Screen>
       <Text
-        style={{
-          color: colors.foreground,
+        textStyle={{
           fontSize: tokens.typography.headline,
+          fontWeight: '700',
         }}>
         Verify your email
       </Text>
-      <Text style={{ color: colors.foreground }}>
-        This is the email verification screen scaffold.
+      <Text textStyle={{ color: colors.mutedForeground }}>
+        Enter the verification code sent to your email address.
       </Text>
-    </View>
+      <Button label="Verify email" />
+      <Button label="Resend code" variant="text" />
+    </Screen>
   );
 }

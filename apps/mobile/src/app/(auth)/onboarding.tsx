@@ -1,48 +1,98 @@
 import { useTheme } from '@/components/theme';
-import { markOnboardingComplete } from '@/lib/onboarding-storage';
+import { Button, Row, Spacer, Text } from '@/components/ui';
+import { Screen } from '@/components/ui/screen';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
+
+const heroVideo = require('@/assets/videos/hero-video-mobile.mp4');
 
 export default function OnboardingScreen() {
+  const { height, width } = useWindowDimensions();
   const { colors, tokens } = useTheme();
+  const contentOffset = Math.max(
+    height * 0.57 - tokens.spacing.xxxl,
+    tokens.spacing.xxxl,
+  );
+  const player = useVideoPlayer(heroVideo, (videoPlayer) => {
+    videoPlayer.loop = true;
+    videoPlayer.muted = true;
+    videoPlayer.play();
+  });
 
-  async function completeOnboarding() {
-    await markOnboardingComplete();
+  function openLogin() {
     router.replace('/(auth)');
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        gap: tokens.spacing.xl,
-        padding: tokens.spacing.xl,
-        backgroundColor: colors.background,
-      }}>
+    <Screen
+      background={
+        <>
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.background }]} />
+          <VideoView
+            contentFit="cover"
+            nativeControls={false}
+            player={player}
+            pointerEvents="none"
+            style={StyleSheet.absoluteFill}
+            surfaceType="textureView"
+            useExoShutter={false}
+          />
+          <View
+            pointerEvents="none"
+            style={[StyleSheet.absoluteFill, { backgroundColor: colors.overlay }]}
+          />
+          <LinearGradient
+            colors={[
+              colors.transparent,
+              colors.transparent,
+              colors.background,
+              colors.background,
+            ]}
+            locations={[0, 0.28, 0.68, 1]}
+            pointerEvents="none"
+            style={StyleSheet.absoluteFill}
+          />
+        </>
+      }
+      contentBackgroundColor={colors.transparent}>
+      <Spacer size={contentOffset} />
       <Text
-        style={{
+        textStyle={{
           color: colors.foreground,
-          fontSize: tokens.typography.headline,
+          fontSize: tokens.typography.hero,
+          fontWeight: '800',
+          lineHeight: tokens.typography.lineHeightHero,
         }}>
-        Welcome to Chefly
+        Make every meal worth remembering.
       </Text>
-      <Text style={{ color: colors.foreground }}>
-        This is the onboarding screen scaffold.
+      <Text textStyle={{ color: colors.mutedForeground }}>
+        Discover recipes, plan meals, and keep your kitchen ideas organized in
+        one simple place.
       </Text>
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => void completeOnboarding()}
-        style={{
-          alignItems: 'center',
-          borderRadius: tokens.radius.md,
-          padding: tokens.spacing.lg,
-          backgroundColor: colors.primary,
-        }}>
-        <Text style={{ color: colors.primaryForeground }}>
-          Continue to login
+      <Button
+        fullWidth
+        height={50}
+        label="Get Started"
+        onPress={openLogin}
+      />
+      <Row
+        alignment="center"
+        spacing={tokens.spacing.xs}
+        style={{ width: width - tokens.spacing.xl * 2 }}>
+        <Spacer flexible />
+        <Text textStyle={{ color: colors.mutedForeground }}>
+          Already have an account?
         </Text>
-      </Pressable>
-    </View>
+        <Button
+          contentPadding={0}
+          label="Sign in"
+          onPress={openLogin}
+          variant="link"
+        />
+        <Spacer flexible />
+      </Row>
+    </Screen>
   );
 }

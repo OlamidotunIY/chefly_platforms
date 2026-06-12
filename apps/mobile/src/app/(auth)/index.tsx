@@ -1,27 +1,23 @@
 import { useTheme } from '@/components/theme';
-import { Text, View } from 'react-native';
+import { Button, Text } from '@/components/ui';
+import { Screen } from '@/components/ui/screen';
 
 export default function LoginScreen() {
   const { colors, tokens } = useTheme();
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        padding: tokens.spacing.xl,
-        backgroundColor: colors.background,
-      }}>
+    <Screen>
       <Text
-        style={{
-          color: colors.foreground,
+        textStyle={{
           fontSize: tokens.typography.headline,
+          fontWeight: '700',
         }}>
         Login
       </Text>
-      <Text style={{ color: colors.foreground }}>
-        This is the login screen scaffold.
+      <Text textStyle={{ color: colors.mutedForeground }}>
+        Sign in to continue cooking with Chefly.
       </Text>
-    </View>
+      <Button label="Continue" />
+    </Screen>
   );
 }
