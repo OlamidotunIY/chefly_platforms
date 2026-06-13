@@ -3,8 +3,13 @@ import { Logo } from '@/components/custom/Logo';
 import { SocialAuthButtons } from '@/components/custom/SocialAuthButtons';
 import { tokens, useTheme } from '@/components/theme';
 import { Button, Form, Row, Screen, Spacer, Text, TextInput } from '@/components/ui';
+import { resolveVerificationEmail } from '@chefly/api';
 import { authClient } from '@/lib/auth-client';
-import { validateEmail, validatePassword } from '@/lib/auth-validation';
+import {
+  validateEmail,
+  validatePassword,
+  validateUsername,
+} from '@/lib/auth-validation';
 import { clearCurrentUser, hydrateCurrentUser } from '@/lib/current-user';
 import { markOnboardingComplete } from '@/lib/onboarding-storage';
 import { router } from 'expo-router';
@@ -15,8 +20,8 @@ export default function LoginScreen()
 {
   const { width } = useWindowDimensions();
   const { colors } = useTheme();
-  const [email, setEmail] = useState('');
-  const [emailError, setEmailError] = useState<string | null>(null);
+  const [identifier, setIdentifier] = useState('');
+  const [identifierError, setIdentifierError] = useState<string | null>(null);
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -25,15 +30,25 @@ export default function LoginScreen()
   const blurBleed = 100;
   const contentWidth = width - tokens.spacing.xl * 2;
 
+  function validateIdentifier(value: string) {
+    if (!value) {
+      return 'Enter your username or email address.';
+    }
+
+    return value.includes('@')
+      ? validateEmail(value)
+      : validateUsername(value);
+  }
+
   async function handleSignIn() {
-    const normalizedEmail = email.trim();
-    const emailValidationError = validateEmail(normalizedEmail);
+    const normalizedIdentifier = identifier.trim();
+    const identifierValidationError = validateIdentifier(normalizedIdentifier);
     const passwordValidationError = validatePassword(password);
 
-    setEmailError(emailValidationError);
+    setIdentifierError(identifierValidationError);
     setPasswordError(passwordValidationError);
 
-    if (emailValidationError || passwordValidationError) {
+    if (identifierValidationError || passwordValidationError) {
       return;
     }
 
@@ -41,16 +56,43 @@ export default function LoginScreen()
     setIsSubmitting(true);
 
     try {
-      const result = await authClient.signIn.email({
-        email: normalizedEmail,
-        password,
-      });
+      const isEmail = normalizedIdentifier.includes('@');
+      const result = isEmail
+        ? await authClient.signIn.email({
+          email: normalizedIdentifier,
+          password,
+        })
+        : await authClient.signIn.username({
+          username: normalizedIdentifier,
+          password,
+        });
 
       if (result.error) {
         if (result.error.status === 403) {
+          let verificationEmail = normalizedIdentifier;
+
+          if (!isEmail) {
+            const emailResult = await resolveVerificationEmail({
+              body: {
+                username: normalizedIdentifier,
+                password,
+              },
+            });
+
+            if (emailResult.error || !emailResult.data?.data.email) {
+              setError('Unable to prepare email verification.');
+              return;
+            }
+
+            verificationEmail = emailResult.data.data.email;
+          }
+
           clearCurrentUser();
           await markOnboardingComplete();
-          router.replace('/(auth)/email-verification');
+          router.replace({
+            pathname: '/(auth)/email-verification',
+            params: { email: verificationEmail },
+          });
           return;
         }
 
@@ -103,36 +145,35 @@ export default function LoginScreen()
       <Form>
         <TextInput
           autoCapitalize="none"
-          autoComplete="email"
+          autoComplete="username"
           autoCorrect={false}
           containerStyle={[
             styles.inputCon,
-            emailError && { borderBottomColor: colors.destructive },
+            identifierError && { borderBottomColor: colors.destructive },
           ]}
-          iconColor={emailError ? colors.destructive : undefined}
+          iconColor={identifierError ? colors.destructive : undefined}
           inputStyle={[
             styles.input,
-            emailError && { color: colors.destructive },
+            identifierError && { color: colors.destructive },
           ]}
-          keyboardType="email-address"
-          leftIcon="mail"
-          onBlur={() => setEmailError(validateEmail(email.trim()))}
+          leftIcon="person"
+          onBlur={() => setIdentifierError(validateIdentifier(identifier.trim()))}
           onChangeText={(value) => {
-            setEmail(value);
-            if (emailError) {
-              setEmailError(validateEmail(value.trim()));
+            setIdentifier(value);
+            if (identifierError) {
+              setIdentifierError(validateIdentifier(value.trim()));
             }
           }}
-          placeholder="Enter your email address"
-          value={email}
+          placeholder="Username or email address"
+          value={identifier}
         />
-        {emailError ? (
+        {identifierError ? (
           <Text
             textStyle={{
               color: colors.destructive,
               fontSize: tokens.typography.caption,
             }}>
-            {emailError}
+            {identifierError}
           </Text>
         ) : null}
         <TextInput
