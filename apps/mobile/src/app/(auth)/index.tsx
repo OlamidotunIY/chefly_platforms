@@ -104,7 +104,12 @@ export default function LoginScreen()
 
       await markOnboardingComplete();
       router.replace(
-        user.emailVerified ? '/(tabs)' : '/(auth)/email-verification',
+        user.emailVerified
+          ? '/(tabs)'
+          : {
+            pathname: '/(auth)/email-verification',
+            params: { email: user.email },
+          },
       );
     } catch {
       clearCurrentUser('error');
@@ -214,7 +219,11 @@ export default function LoginScreen()
         ) : null}
         <Row style={{ width }}>
           <Spacer flexible />
-          <Button variant="link" label="Forgot password?" />
+          <Button
+            label="Forgot password?"
+            onPress={() => router.push('/(auth)/forget-password')}
+            variant="link"
+          />
         </Row>
         {error ? (
           <Text textStyle={{ color: colors.destructive }}>

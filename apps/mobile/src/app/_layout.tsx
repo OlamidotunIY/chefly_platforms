@@ -6,7 +6,8 @@ export default function RootLayout() {
     <ThemeProvider defaultMode="system">
       <Stack
         screenOptions={{
-          animation: 'slide_from_right',
+          animation: 'fade',
+          animationDuration: 180,
           animationTypeForReplace: 'push',
           headerShown: false,
         }}>

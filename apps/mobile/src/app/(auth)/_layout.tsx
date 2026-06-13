@@ -4,7 +4,8 @@ export default function AuthLayout() {
   return (
     <Stack
       screenOptions={{
-        animation: 'slide_from_right',
+        animation: 'fade',
+        animationDuration: 180,
         animationTypeForReplace: 'push',
         headerShown: false,
       }}>
@@ -12,6 +13,8 @@ export default function AuthLayout() {
       <Stack.Screen name="onboarding" />
       <Stack.Screen name="email-verification" />
       <Stack.Screen name="sign-up" />
+      <Stack.Screen name="forget-password" />
+      <Stack.Screen name="change-password" />
     </Stack>
   );
 }

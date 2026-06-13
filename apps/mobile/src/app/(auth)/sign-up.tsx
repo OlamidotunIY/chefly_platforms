@@ -154,7 +154,12 @@ export default function SignUpScreen()
                 const user = await hydrateCurrentUser(result.data.user.id);
 
                 router.replace(
-                    user.emailVerified ? '/(tabs)' : '/(auth)/email-verification',
+                    user.emailVerified
+                        ? '/(tabs)'
+                        : {
+                            pathname: '/(auth)/email-verification',
+                            params: { email: user.email },
+                        },
                 );
             } catch {
                 clearCurrentUser();
@@ -164,7 +169,10 @@ export default function SignUpScreen()
                     return;
                 }
 
-                router.replace('/(auth)/email-verification');
+                router.replace({
+                    pathname: '/(auth)/email-verification',
+                    params: { email: normalizedEmail },
+                });
             }
         } catch {
             clearCurrentUser('error');
