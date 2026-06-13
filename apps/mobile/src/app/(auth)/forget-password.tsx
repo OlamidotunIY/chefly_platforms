@@ -4,7 +4,7 @@ import { Button, Form, Screen, Spacer, Text, TextInput } from '@/components/ui';
 import { authClient } from '@/lib/auth-client';
 import { validateEmail } from '@/lib/auth-validation';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 
 export default function ForgetPasswordScreen()
@@ -15,7 +15,18 @@ export default function ForgetPasswordScreen()
     const [emailError, setEmailError] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const isMounted = useRef(false);
     const blurBleed = 100;
+
+    useEffect(() =>
+    {
+        isMounted.current = true;
+
+        return () =>
+        {
+            isMounted.current = false;
+        };
+    }, []);
 
     async function handleContinue()
     {
@@ -40,10 +51,19 @@ export default function ForgetPasswordScreen()
 
             if (result.error)
             {
-                setError(result.error.message ?? 'Unable to send the reset code.');
+                if (isMounted.current)
+                {
+                    setError(result.error.message ?? 'Unable to send the reset code.');
+                }
                 return;
             }
 
+            if (!isMounted.current)
+            {
+                return;
+            }
+
+            setIsSubmitting(false);
             router.replace({
                 pathname: '/(auth)/email-verification',
                 params: {
@@ -53,10 +73,16 @@ export default function ForgetPasswordScreen()
             });
         } catch
         {
-            setError('Unable to reach the authentication server.');
+            if (isMounted.current)
+            {
+                setError('Unable to reach the authentication server.');
+            }
         } finally
         {
-            setIsSubmitting(false);
+            if (isMounted.current)
+            {
+                setIsSubmitting(false);
+            }
         }
     }
 

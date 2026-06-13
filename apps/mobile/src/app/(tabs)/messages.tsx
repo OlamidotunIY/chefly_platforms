@@ -1,7 +1,7 @@
 import { useTheme } from '@/components/theme';
-import { Button, Screen, Text } from '@/components/ui';
+import { Screen, Text } from '@/components/ui';
 
-export default function FeaturesScreen() {
+export default function MessagesScreen() {
   const { colors, tokens } = useTheme();
 
   return (
@@ -11,12 +11,11 @@ export default function FeaturesScreen() {
           fontSize: tokens.typography.headline,
           fontWeight: '700',
         }}>
-        Features
+        Messages
       </Text>
       <Text textStyle={{ color: colors.mutedForeground }}>
-        Discover featured recipes, collections, and kitchen inspiration.
+        Your conversations and cooking updates will appear here.
       </Text>
-      <Button label="Explore recipes" />
     </Screen>
   );
 }

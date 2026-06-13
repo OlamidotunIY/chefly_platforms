@@ -12,7 +12,7 @@ import { authClient } from '@/lib/auth-client';
 import { clearCurrentUser, hydrateCurrentUser } from '@/lib/current-user';
 import { markOnboardingComplete } from '@/lib/onboarding-storage';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 
 type UsernameStatus = 'idle' | 'checking' | 'available' | 'unavailable' | 'invalid';
@@ -31,8 +31,17 @@ export default function SignUpScreen()
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const isMounted = useRef(false);
     const blurBleed = 100;
     const contentWidth = width - tokens.spacing.xl * 2;
+
+    useEffect(() => {
+        isMounted.current = true;
+
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
 
     useEffect(() => {
         if (usernameStatus !== 'checking') {
@@ -129,10 +138,12 @@ export default function SignUpScreen()
             });
 
             if (availability.error || !availability.data.available) {
-                setUsernameStatus('unavailable');
-                setUsernameMessage(
-                    availability.error?.message ?? 'Username is already taken.',
-                );
+                if (isMounted.current) {
+                    setUsernameStatus('unavailable');
+                    setUsernameMessage(
+                        availability.error?.message ?? 'Username is already taken.',
+                    );
+                }
                 return;
             }
 
@@ -144,7 +155,9 @@ export default function SignUpScreen()
             });
 
             if (result.error) {
-                setError(result.error.message ?? 'Unable to create your account.');
+                if (isMounted.current) {
+                    setError(result.error.message ?? 'Unable to create your account.');
+                }
                 return;
             }
 
@@ -153,6 +166,11 @@ export default function SignUpScreen()
             try {
                 const user = await hydrateCurrentUser(result.data.user.id);
 
+                if (!isMounted.current) {
+                    return;
+                }
+
+                setIsSubmitting(false);
                 router.replace(
                     user.emailVerified
                         ? '/(tabs)'
@@ -165,10 +183,17 @@ export default function SignUpScreen()
                 clearCurrentUser();
 
                 if (result.data.user.emailVerified) {
-                    setError('Your account was created, but your profile could not be loaded.');
+                    if (isMounted.current) {
+                        setError('Your account was created, but your profile could not be loaded.');
+                    }
                     return;
                 }
 
+                if (!isMounted.current) {
+                    return;
+                }
+
+                setIsSubmitting(false);
                 router.replace({
                     pathname: '/(auth)/email-verification',
                     params: { email: normalizedEmail },
@@ -176,9 +201,13 @@ export default function SignUpScreen()
             }
         } catch {
             clearCurrentUser('error');
-            setError('Unable to reach the authentication server.');
+            if (isMounted.current) {
+                setError('Unable to reach the authentication server.');
+            }
         } finally {
-            setIsSubmitting(false);
+            if (isMounted.current) {
+                setIsSubmitting(false);
+            }
         }
     }
 

@@ -5,7 +5,7 @@ import { authClient } from '@/lib/auth-client';
 import { validatePassword } from '@/lib/auth-validation';
 import { clearCurrentUser } from '@/lib/current-user';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 
 export default function ChangePasswordScreen()
@@ -26,7 +26,18 @@ export default function ChangePasswordScreen()
     const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const isMounted = useRef(false);
     const blurBleed = 100;
+
+    useEffect(() =>
+    {
+        isMounted.current = true;
+
+        return () =>
+        {
+            isMounted.current = false;
+        };
+    }, []);
 
     function validateConfirmation(value: string)
     {
@@ -70,18 +81,33 @@ export default function ChangePasswordScreen()
 
             if (result.error)
             {
-                setError(result.error.message ?? 'Unable to change your password.');
+                if (isMounted.current)
+                {
+                    setError(result.error.message ?? 'Unable to change your password.');
+                }
                 return;
             }
 
+            if (!isMounted.current)
+            {
+                return;
+            }
+
+            setIsSubmitting(false);
             clearCurrentUser();
             router.replace('/(auth)');
         } catch
         {
-            setError('Unable to reach the authentication server.');
+            if (isMounted.current)
+            {
+                setError('Unable to reach the authentication server.');
+            }
         } finally
         {
-            setIsSubmitting(false);
+            if (isMounted.current)
+            {
+                setIsSubmitting(false);
+            }
         }
     }
 

@@ -13,7 +13,7 @@ import {
 import { clearCurrentUser, hydrateCurrentUser } from '@/lib/current-user';
 import { markOnboardingComplete } from '@/lib/onboarding-storage';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 export default function LoginScreen()
@@ -27,8 +27,17 @@ export default function LoginScreen()
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isMounted = useRef(false);
   const blurBleed = 100;
   const contentWidth = width - tokens.spacing.xl * 2;
+
+  useEffect(() => {
+    isMounted.current = true;
+
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   function validateIdentifier(value: string) {
     if (!value) {
@@ -80,7 +89,9 @@ export default function LoginScreen()
             });
 
             if (emailResult.error || !emailResult.data?.data.email) {
-              setError('Unable to prepare email verification.');
+              if (isMounted.current) {
+                setError('Unable to prepare email verification.');
+              }
               return;
             }
 
@@ -89,6 +100,12 @@ export default function LoginScreen()
 
           clearCurrentUser();
           await markOnboardingComplete();
+
+          if (!isMounted.current) {
+            return;
+          }
+
+          setIsSubmitting(false);
           router.replace({
             pathname: '/(auth)/email-verification',
             params: { email: verificationEmail },
@@ -96,13 +113,21 @@ export default function LoginScreen()
           return;
         }
 
-        setError(result.error.message ?? 'Unable to sign in.');
+        if (isMounted.current) {
+          setError(result.error.message ?? 'Unable to sign in.');
+        }
         return;
       }
 
       const user = await hydrateCurrentUser(result.data.user.id);
 
       await markOnboardingComplete();
+
+      if (!isMounted.current) {
+        return;
+      }
+
+      setIsSubmitting(false);
       router.replace(
         user.emailVerified
           ? '/(tabs)'
@@ -113,9 +138,13 @@ export default function LoginScreen()
       );
     } catch {
       clearCurrentUser('error');
-      setError('Unable to reach the authentication server.');
+      if (isMounted.current) {
+        setError('Unable to reach the authentication server.');
+      }
     } finally {
-      setIsSubmitting(false);
+      if (isMounted.current) {
+        setIsSubmitting(false);
+      }
     }
   }
 

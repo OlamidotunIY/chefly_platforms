@@ -191,12 +191,21 @@ export default function EmailVerificationScreen() {
   const [continueRoute, setContinueRoute] = useState<Href | null>(null);
   const inputRefs = useRef<(RNTextInput | null)[]>([]);
   const lastSubmittedCode = useRef<string | null>(null);
+  const isMounted = useRef(false);
   const blurBleed = 100;
   const code = digits.join('');
   const otpWidth = Math.min(width - tokens.spacing.xl * 2, 320);
   const verificationMessage = email
     ? `Enter the six-digit ${isPasswordReset ? 'password reset' : 'verification'} code sent to ${email}.`
     : `Enter the six-digit ${isPasswordReset ? 'password reset' : 'verification'} code sent to your email address.`;
+
+  useEffect(() => {
+    isMounted.current = true;
+
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (email) {
@@ -287,7 +296,13 @@ export default function EmailVerificationScreen() {
         });
 
       if (result.error) {
-        showError(result.error.message ?? 'That verification code is incorrect.');
+        if (isMounted.current) {
+          showError(result.error.message ?? 'That verification code is incorrect.');
+        }
+        return;
+      }
+
+      if (!isMounted.current) {
         return;
       }
 
@@ -311,6 +326,10 @@ export default function EmailVerificationScreen() {
 
       const session = await authClient.getSession();
 
+      if (!isMounted.current) {
+        return;
+      }
+
       if (!session.data?.user) {
         clearCurrentUser();
         setContinueRoute('/(auth)');
@@ -319,14 +338,22 @@ export default function EmailVerificationScreen() {
 
       try {
         await hydrateCurrentUser(session.data.user.id);
-        setContinueRoute('/(tabs)');
+        if (isMounted.current) {
+          setContinueRoute('/(tabs)');
+        }
       } catch {
-        setContinueRoute('/');
+        if (isMounted.current) {
+          setContinueRoute('/');
+        }
       }
     } catch {
-      showError('Unable to verify the code. Please try again.');
+      if (isMounted.current) {
+        showError('Unable to verify the code. Please try again.');
+      }
     } finally {
-      setIsSubmitting(false);
+      if (isMounted.current) {
+        setIsSubmitting(false);
+      }
     }
   }, [email, isPasswordReset, showError]);
 
@@ -367,7 +394,13 @@ export default function EmailVerificationScreen() {
         });
 
       if (result.error) {
-        showError(result.error.message ?? 'Unable to resend the code.');
+        if (isMounted.current) {
+          showError(result.error.message ?? 'Unable to resend the code.');
+        }
+        return;
+      }
+
+      if (!isMounted.current) {
         return;
       }
 
@@ -378,9 +411,13 @@ export default function EmailVerificationScreen() {
       setMessage('A new verification code was sent.');
       inputRefs.current[0]?.focus();
     } catch {
-      showError('Unable to resend the code. Please try again.');
+      if (isMounted.current) {
+        showError('Unable to resend the code. Please try again.');
+      }
     } finally {
-      setIsResending(false);
+      if (isMounted.current) {
+        setIsResending(false);
+      }
     }
   }
 
