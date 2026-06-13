@@ -9,6 +9,8 @@ import {
     validateUsername,
 } from '@/lib/auth-validation';
 import { authClient } from '@/lib/auth-client';
+import { clearCurrentUser, hydrateCurrentUser } from '@/lib/current-user';
+import { markOnboardingComplete } from '@/lib/onboarding-storage';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
@@ -146,8 +148,26 @@ export default function SignUpScreen()
                 return;
             }
 
-            router.replace('/(auth)/email-verification');
+            await markOnboardingComplete();
+
+            try {
+                const user = await hydrateCurrentUser(result.data.user.id);
+
+                router.replace(
+                    user.emailVerified ? '/(tabs)' : '/(auth)/email-verification',
+                );
+            } catch {
+                clearCurrentUser();
+
+                if (result.data.user.emailVerified) {
+                    setError('Your account was created, but your profile could not be loaded.');
+                    return;
+                }
+
+                router.replace('/(auth)/email-verification');
+            }
         } catch {
+            clearCurrentUser('error');
             setError('Unable to reach the authentication server.');
         } finally {
             setIsSubmitting(false);

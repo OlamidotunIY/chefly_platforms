@@ -25,12 +25,12 @@ export default function OnboardingScreen()
 
   function openLogin()
   {
-    router.replace('/(auth)');
+    router.push('/(auth)');
   }
 
   function openSignUp()
   {
-    router.replace('/(auth)/sign-up');
+    router.push('/(auth)/sign-up');
   }
 
   return (

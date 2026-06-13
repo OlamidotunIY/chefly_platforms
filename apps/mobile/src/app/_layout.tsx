@@ -1,10 +1,19 @@
 import { ThemeProvider } from '@/components/theme';
-import { Slot } from 'expo-router';
+import { Stack } from 'expo-router';
 
 export default function RootLayout() {
   return (
     <ThemeProvider defaultMode="system">
-      <Slot />
+      <Stack
+        screenOptions={{
+          animation: 'slide_from_right',
+          animationTypeForReplace: 'push',
+          headerShown: false,
+        }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(tabs)" />
+      </Stack>
     </ThemeProvider>
   );
 }

@@ -2,6 +2,7 @@ import { expoClient } from '@better-auth/expo/client';
 import { client } from '@chefly/api';
 import { createAuthClient } from 'better-auth/react';
 import Constants from 'expo-constants';
+import 'expo-network';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import { emailOTPClient, usernameClient } from 'better-auth/client/plugins';

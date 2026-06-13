@@ -5,6 +5,8 @@ import { tokens, useTheme } from '@/components/theme';
 import { Button, Form, Row, Screen, Spacer, Text, TextInput } from '@/components/ui';
 import { authClient } from '@/lib/auth-client';
 import { validateEmail, validatePassword } from '@/lib/auth-validation';
+import { clearCurrentUser, hydrateCurrentUser } from '@/lib/current-user';
+import { markOnboardingComplete } from '@/lib/onboarding-storage';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
@@ -46,6 +48,8 @@ export default function LoginScreen()
 
       if (result.error) {
         if (result.error.status === 403) {
+          clearCurrentUser();
+          await markOnboardingComplete();
           router.replace('/(auth)/email-verification');
           return;
         }
@@ -54,8 +58,14 @@ export default function LoginScreen()
         return;
       }
 
-      router.replace('/');
+      const user = await hydrateCurrentUser(result.data.user.id);
+
+      await markOnboardingComplete();
+      router.replace(
+        user.emailVerified ? '/(tabs)' : '/(auth)/email-verification',
+      );
     } catch {
+      clearCurrentUser('error');
       setError('Unable to reach the authentication server.');
     } finally {
       setIsSubmitting(false);
