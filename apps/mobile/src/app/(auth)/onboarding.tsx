@@ -8,21 +8,29 @@ import { StyleSheet, View, useWindowDimensions } from 'react-native';
 
 const heroVideo = require('@/assets/videos/hero-video-mobile.mp4');
 
-export default function OnboardingScreen() {
+export default function OnboardingScreen()
+{
   const { height, width } = useWindowDimensions();
   const { colors, tokens } = useTheme();
   const contentOffset = Math.max(
     height * 0.57 - tokens.spacing.xxxl,
     tokens.spacing.xxxl,
   );
-  const player = useVideoPlayer(heroVideo, (videoPlayer) => {
+  const player = useVideoPlayer(heroVideo, (videoPlayer) =>
+  {
     videoPlayer.loop = true;
     videoPlayer.muted = true;
     videoPlayer.play();
   });
 
-  function openLogin() {
+  function openLogin()
+  {
     router.replace('/(auth)');
+  }
+
+  function openSignUp()
+  {
+    router.replace('/(auth)/sign-up');
   }
 
   return (
@@ -56,7 +64,8 @@ export default function OnboardingScreen() {
           />
         </>
       }
-      contentBackgroundColor={colors.transparent}>
+      contentBackgroundColor={colors.transparent}
+    >
       <Spacer size={contentOffset} />
       <Text
         textStyle={{
@@ -75,7 +84,8 @@ export default function OnboardingScreen() {
         fullWidth
         height={50}
         label="Get Started"
-        onPress={openLogin}
+        onPress={openSignUp}
+        borderRadius={0}
       />
       <Row
         alignment="center"

@@ -39,5 +39,9 @@ export { Slider, type SliderProps } from './slider';
 export { Spacer, type SpacerProps } from './spacer';
 export { Switch, type SwitchProps } from './switch';
 export { Text, type TextProps } from './text';
-export { TextInput, type TextInputProps } from './text-input';
+export {
+  TextInput,
+  type TextInputIconName,
+  type TextInputProps,
+} from './text-input';
 export { Tooltip, type TooltipProps } from './tooltip';

@@ -42,7 +42,7 @@ export function Screen({
           style={{
             width,
             height,
-            paddingHorizontal: tokens.spacing.xl,
+            paddingHorizontal: tokens.spacing.lg,
             paddingVertical: tokens.spacing.xxxl,
             backgroundColor,
           }}>

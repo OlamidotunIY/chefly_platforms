@@ -1,14 +1,19 @@
 import type { ButtonProps as ExpoButtonProps } from '@expo/ui';
 import {
+  Box,
   Button as ComposeButton,
+  CircularProgressIndicator,
   OutlinedButton,
   Shape,
   Text as ComposeText,
   TextButton,
 } from '@expo/ui/jetpack-compose';
 import {
+  animateContentSize,
   fillMaxWidth,
   height as heightModifier,
+  size as sizeModifier,
+  width as widthModifier,
 } from '@expo/ui/jetpack-compose/modifiers';
 
 import { useTheme } from '../theme';
@@ -26,13 +31,17 @@ export type ButtonContentPadding =
     };
 
 export type ButtonProps = Omit<ExpoButtonProps, 'variant'> & {
+  borderRadius?: number;
   contentPadding?: ButtonContentPadding;
   fullWidth?: boolean;
   height?: number;
+  loading?: boolean;
+  loadingWidth?: number;
   variant?: ButtonVariant;
 };
 
 export function Button({
+  borderRadius,
   children,
   contentPadding,
   disabled,
@@ -40,6 +49,8 @@ export function Button({
   height,
   hidden,
   label,
+  loading = false,
+  loadingWidth,
   modifiers,
   onPress,
   variant = 'filled',
@@ -57,16 +68,32 @@ export function Button({
         ? colors.foreground
         : colors.primary;
   const isLink = variant === 'link';
-  const content = children ?? (
-    <ComposeText
+  const resolvedHeight = height ?? tokens.control.height;
+  const resolvedLoadingWidth = loadingWidth ?? resolvedHeight;
+  const resolvedRadius = borderRadius ?? tokens.radius.md;
+  const content = loading ? (
+    <CircularProgressIndicator
       color={labelColor}
-      style={{
-        fontSize: isLink ? tokens.typography.body : tokens.typography.title,
-        fontWeight: isLink ? '600' : '700',
-        textDecoration: isLink ? 'underline' : 'none',
-      }}>
-      {label ?? ''}
-    </ComposeText>
+      modifiers={[
+        sizeModifier(
+          tokens.control.iconSize + tokens.spacing.sm,
+          tokens.control.iconSize + tokens.spacing.sm,
+        ),
+      ]}
+      trackColor={colors.transparent}
+    />
+  ) : (
+    children ?? (
+      <ComposeText
+        color={labelColor}
+        style={{
+          fontSize: isLink ? tokens.typography.body : tokens.typography.title,
+          fontWeight: isLink ? '600' : '700',
+          textDecoration: isLink ? 'underline' : 'none',
+        }}>
+        {label ?? ''}
+      </ComposeText>
+    )
   );
   const resolvedContentPadding =
     typeof contentPadding === 'number'
@@ -86,26 +113,35 @@ export function Button({
         : undefined;
   const shape = Shape.RoundedCorner({
     cornerRadii: {
-      topStart: tokens.radius.md,
-      topEnd: tokens.radius.md,
-      bottomStart: tokens.radius.md,
-      bottomEnd: tokens.radius.md,
+      topStart: resolvedRadius,
+      topEnd: resolvedRadius,
+      bottomStart: resolvedRadius,
+      bottomEnd: resolvedRadius,
     },
   });
   const commonProps = {
-    enabled: !disabled,
+    enabled: !disabled && !loading,
     modifiers: [
       ...(modifiers ?? []),
-      ...(fullWidth ? [fillMaxWidth()] : []),
-      ...(height != null ? [heightModifier(height)] : []),
+      animateContentSize(0.8, 420),
+      ...(loading
+        ? [widthModifier(resolvedLoadingWidth)]
+        : fullWidth
+          ? [fillMaxWidth()]
+          : []),
+      heightModifier(resolvedHeight),
     ],
-    onClick: disabled ? undefined : onPress,
+    onClick: disabled || loading ? undefined : onPress,
     shape,
-    contentPadding: resolvedContentPadding,
+    contentPadding: loading
+      ? { start: 0, top: 0, end: 0, bottom: 0 }
+      : resolvedContentPadding,
   };
 
+  let button: React.ReactElement;
+
   if (variant === 'outlined') {
-    return (
+    button = (
       <OutlinedButton
         {...commonProps}
         colors={{
@@ -115,10 +151,8 @@ export function Button({
         {content}
       </OutlinedButton>
     );
-  }
-
-  if (variant === 'text' || variant === 'link') {
-    return (
+  } else if (variant === 'text' || variant === 'link') {
+    button = (
       <TextButton
         {...commonProps}
         colors={{
@@ -128,18 +162,30 @@ export function Button({
         {content}
       </TextButton>
     );
+  } else {
+    button = (
+      <ComposeButton
+        {...commonProps}
+        colors={{
+          containerColor: colors.primary,
+          contentColor: colors.primaryForeground,
+          disabledContainerColor: loading ? colors.primary : colors.muted,
+          disabledContentColor: loading
+            ? colors.primaryForeground
+            : colors.mutedForeground,
+        }}>
+        {content}
+      </ComposeButton>
+    );
   }
 
-  return (
-    <ComposeButton
-      {...commonProps}
-      colors={{
-        containerColor: colors.primary,
-        contentColor: colors.primaryForeground,
-        disabledContainerColor: colors.muted,
-        disabledContentColor: colors.mutedForeground,
-      }}>
-      {content}
-    </ComposeButton>
+  return fullWidth || loading ? (
+    <Box
+      contentAlignment="center"
+      modifiers={[fillMaxWidth(), heightModifier(resolvedHeight)]}>
+      {button}
+    </Box>
+  ) : (
+    button
   );
 }

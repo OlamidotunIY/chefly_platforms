@@ -13,9 +13,12 @@ export type ButtonContentPadding =
     };
 
 export type ButtonProps = Omit<ExpoButtonProps, 'variant'> & {
+  borderRadius?: number;
   contentPadding?: ButtonContentPadding;
   fullWidth?: boolean;
   height?: number;
+  loading?: boolean;
+  loadingWidth?: number;
   variant?: ButtonVariant;
 };
 

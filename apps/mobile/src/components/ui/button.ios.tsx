@@ -1,6 +1,13 @@
 import type { ButtonProps as ExpoButtonProps } from '@expo/ui';
-import { Button as SwiftUIButton } from '@expo/ui/swift-ui';
 import {
+  Button as SwiftUIButton,
+  ProgressView,
+  ZStack,
+} from '@expo/ui/swift-ui';
+import {
+  Animation,
+  animation,
+  buttonBorderShape,
   buttonStyle,
   controlSize,
   disabled as disabledModifier,
@@ -8,6 +15,7 @@ import {
   frame,
   foregroundColor,
   padding,
+  progressViewStyle,
   tint,
   underline,
 } from '@expo/ui/swift-ui/modifiers';
@@ -27,13 +35,17 @@ export type ButtonContentPadding =
     };
 
 export type ButtonProps = Omit<ExpoButtonProps, 'variant'> & {
+  borderRadius?: number;
   contentPadding?: ButtonContentPadding;
   fullWidth?: boolean;
   height?: number;
+  loading?: boolean;
+  loadingWidth?: number;
   variant?: ButtonVariant;
 };
 
 export function Button({
+  borderRadius,
   children,
   contentPadding,
   disabled,
@@ -41,6 +53,8 @@ export function Button({
   height,
   hidden,
   label,
+  loading = false,
+  loadingWidth,
   modifiers = [],
   onPress,
   variant = 'filled',
@@ -58,6 +72,9 @@ export function Button({
         ? 'bordered'
         : 'plain';
   const isLink = variant === 'link';
+  const resolvedHeight = height ?? tokens.control.height;
+  const resolvedLoadingWidth = loadingWidth ?? resolvedHeight;
+  const resolvedRadius = borderRadius ?? tokens.radius.md;
   const labelColor =
     variant === 'filled'
       ? colors.primaryForeground
@@ -65,11 +82,12 @@ export function Button({
         ? colors.foreground
         : colors.primary;
 
-  return (
+  const button = (
     <SwiftUIButton
-      label={!children ? label : undefined}
+      label={!children && !loading ? label : undefined}
       modifiers={[
         buttonStyle(style),
+        buttonBorderShape('roundedRectangle', resolvedRadius),
         controlSize('large'),
         tint(colors.primary),
         foregroundColor(labelColor),
@@ -80,7 +98,7 @@ export function Button({
         ...(isLink
           ? [underline({ isActive: true, pattern: 'solid', color: colors.primary })]
           : []),
-        ...(contentPadding != null
+        ...(contentPadding != null && !loading
           ? [
               padding(
                 typeof contentPadding === 'number'
@@ -96,14 +114,40 @@ export function Button({
               ),
             ]
           : []),
-        disabledModifier(Boolean(disabled)),
-        ...(fullWidth || height != null
-          ? [frame({ maxWidth: fullWidth ? Infinity : undefined, height })]
-          : []),
+        disabledModifier(Boolean(disabled || loading)),
+        frame({
+          width: loading ? resolvedLoadingWidth : undefined,
+          maxWidth: !loading && fullWidth ? Infinity : undefined,
+          height: resolvedHeight,
+        }),
+        animation(Animation.easeInOut({ duration: 0.28 }), loading),
         ...modifiers,
       ]}
-      onPress={disabled ? undefined : onPress}>
-      {children as React.ReactElement | undefined}
+      onPress={disabled || loading ? undefined : onPress}>
+      {loading ? (
+        <ProgressView
+          modifiers={[
+            progressViewStyle('circular'),
+            tint(labelColor),
+            frame({
+              width: tokens.control.iconSize + tokens.spacing.sm,
+              height: tokens.control.iconSize + tokens.spacing.sm,
+            }),
+          ]}
+        />
+      ) : (
+        children as React.ReactElement | undefined
+      )}
     </SwiftUIButton>
+  );
+
+  return fullWidth || loading ? (
+    <ZStack
+      alignment="center"
+      modifiers={[frame({ maxWidth: Infinity, height: resolvedHeight })]}>
+      {button}
+    </ZStack>
+  ) : (
+    button
   );
 }
