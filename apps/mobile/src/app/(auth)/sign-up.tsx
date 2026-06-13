@@ -8,7 +8,7 @@ import {
     validatePassword,
     validateUsername,
 } from '@/lib/auth-validation';
-import { authClient } from '@chefly/api';
+import { authClient } from '@/lib/auth-client';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';

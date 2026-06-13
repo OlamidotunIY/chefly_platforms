@@ -1,4 +1,5 @@
-import { authClient, getCurrentUser } from '@chefly/api';
+import { authClient } from '@/lib/auth-client';
+import { getCurrentUser } from '@chefly/api';
 import { router, type Href } from 'expo-router';
 import { useEffect } from 'react';
 import { View, useWindowDimensions } from 'react-native';
@@ -49,7 +50,11 @@ export function SplashScreen() {
 
         await markOnboardingComplete();
 
-        const { data, error } = await getCurrentUser();
+        const { data, error } = await getCurrentUser({
+          headers: {
+            cookie: authClient.getCookie(),
+          },
+        });
 
         if (error || !data?.data) {
           console.error('Unable to load the current user:', error);
