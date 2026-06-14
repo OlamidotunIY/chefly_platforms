@@ -99,8 +99,8 @@ export default function SearchScreen() {
               style={[
                 styles.headerButton,
                 {
-                  height: tokens.control.touchTarget,
-                  width: tokens.control.touchTarget,
+                  height: tokens.control.iconSize,
+                  width: tokens.control.iconSize,
                 },
               ]}>
               <SymbolView
@@ -225,9 +225,7 @@ export default function SearchScreen() {
                   </Text>
                   <Button
                     label="Choose Interest"
-                    onPress={() =>
-                      router.push('/(tabs)/search/choose-interests')
-                    }
+                    onPress={() => router.push('/(app)/choose-interests')}
                     borderRadius={0}
                     fullWidth
                   />

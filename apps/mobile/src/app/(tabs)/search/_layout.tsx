@@ -12,13 +12,6 @@ export default function SearchLayout() {
       <Stack.Screen name="[categoryId]" />
       <Stack.Screen name="recipes/[categorySlug]/[subCategorySlug]" />
       <Stack.Screen name="results/[keyword]" />
-      <Stack.Screen
-        name="choose-interests"
-        options={{
-          animation: 'slide_from_bottom',
-          presentation: 'modal',
-        }}
-      />
     </Stack>
   );
 }

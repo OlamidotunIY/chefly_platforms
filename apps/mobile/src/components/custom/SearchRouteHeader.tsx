@@ -43,8 +43,8 @@ export function SearchRouteHeader({
             style={[
               styles.button,
               {
-                height: tokens.control.touchTarget,
-                width: tokens.control.touchTarget,
+                height: tokens.control.iconSize,
+                width: tokens.control.iconSize,
               },
             ]}>
             <SymbolView
@@ -70,8 +70,8 @@ export function SearchRouteHeader({
             style={[
               styles.button,
               {
-                height: tokens.control.touchTarget,
-                width: tokens.control.touchTarget,
+                height: tokens.control.iconSize,
+                width: tokens.control.iconSize,
               },
             ]}>
             <SymbolView

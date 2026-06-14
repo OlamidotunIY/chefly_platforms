@@ -10,7 +10,6 @@ import {
   Row,
   Screen,
   ScrollView,
-  Spacer,
   Text,
 } from '@/components/ui';
 
@@ -25,33 +24,34 @@ const availableInterests: Interest[] = [];
 export default function ChooseInterestsScreen() {
   const { height, width } = useWindowDimensions();
   const { colors, tokens } = useTheme();
+  const closeButtonSize = 30;
+  const bottomActionHeight =
+    tokens.control.height + tokens.spacing.lg * 3.5;
   const scrollHeight =
     height -
-    tokens.spacing.lg * 2 -
-    tokens.control.touchTarget -
-    tokens.spacing.lg -
-    tokens.control.height -
-    tokens.spacing.md;
+    closeButtonSize -
+    bottomActionHeight -
+    tokens.spacing.lg * 2;
 
   return (
     <Screen
       contentPaddingHorizontal={tokens.spacing.none}
-      contentPaddingVertical={tokens.spacing.lg}
+      contentPaddingVertical={tokens.spacing.none}
       spacing={tokens.spacing.none}>
       <Row
         alignment="center"
         style={{
           paddingHorizontal: tokens.spacing.lg,
-          paddingBottom: tokens.spacing.lg,
+          paddingTop: tokens.spacing.xxxl,
+          paddingBottom: tokens.spacing.sm,
           width,
         }}>
-        <Spacer flexible />
         <RNHostView
           matchContents
           style={{
             backgroundColor: colors.transparent,
-            height: tokens.control.touchTarget,
-            width: tokens.control.touchTarget,
+            height: closeButtonSize,
+            width: closeButtonSize,
           }}>
           <Pressable
             accessibilityLabel="Close interest selection"
@@ -61,13 +61,13 @@ export default function ChooseInterestsScreen() {
             style={[
               styles.closeButton,
               {
-                height: tokens.control.touchTarget,
-                width: tokens.control.touchTarget,
+                height: closeButtonSize,
+                width: closeButtonSize,
               },
             ]}>
             <SymbolView
               name={{ android: 'close', ios: 'xmark' }}
-              size={tokens.control.iconSize + 2}
+              size={30}
               tintColor={colors.foreground}
             />
           </Pressable>
@@ -118,12 +118,15 @@ export default function ChooseInterestsScreen() {
 
       <Column
         style={{
-          backgroundColor: colors.background,
+          backgroundColor: colors.secondary,
+          height: bottomActionHeight,
           paddingHorizontal: tokens.spacing.lg,
-          paddingTop: tokens.spacing.md,
+          paddingVertical: tokens.spacing.lg,
           width,
+
         }}>
         <Button
+          borderRadius={tokens.radius.none}
           fullWidth
           label="Save Interest"
           onPress={() => router.back()}
