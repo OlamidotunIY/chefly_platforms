@@ -1,9 +1,9 @@
 import { SymbolView } from 'expo-symbols';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 
-import { TabHeader } from '@/components/custom/TabHeader';
+import { SearchRouteHeader } from '@/components/custom/SearchRouteHeader';
 import { useTheme } from '@/components/theme';
 import {
   Button,
@@ -59,68 +59,10 @@ export default function SubCategoriesScreen() {
     <Screen
       contentPaddingHorizontal={tokens.spacing.none}
       spacing={tokens.spacing.none}>
-      <TabHeader
-        position="fixed"
-        style={{
-          paddingHorizontal: tokens.spacing.lg,
-          width,
-        }}>
-        <Row alignment="center" style={{ width: width - tokens.spacing.lg * 2 }}>
-          <RNHostView
-            matchContents
-            style={{
-              backgroundColor: colors.transparent,
-              height: tokens.control.touchTarget,
-              width: tokens.control.touchTarget,
-            }}>
-            <Pressable
-              accessibilityLabel="Go back"
-              accessibilityRole="button"
-              hitSlop={tokens.spacing.sm}
-              onPress={() => router.back()}
-              style={[
-                styles.headerButton,
-                {
-                  height: tokens.control.touchTarget,
-                  width: tokens.control.touchTarget,
-                },
-              ]}>
-              <SymbolView
-                name={{ android: 'arrow_back', ios: 'chevron.left' }}
-                size={tokens.control.iconSize + 2}
-                tintColor={colors.foreground}
-              />
-            </Pressable>
-          </RNHostView>
-          <Spacer flexible />
-          <RNHostView
-            matchContents
-            style={{
-              backgroundColor: colors.transparent,
-              height: tokens.control.touchTarget,
-              width: tokens.control.touchTarget,
-            }}>
-            <Pressable
-              accessibilityLabel="Search subcategories"
-              accessibilityRole="button"
-              hitSlop={tokens.spacing.sm}
-              onPress={() => setSearchVisible((visible) => !visible)}
-              style={[
-                styles.headerButton,
-                {
-                  height: tokens.control.touchTarget,
-                  width: tokens.control.touchTarget,
-                },
-              ]}>
-              <SymbolView
-                name={{ android: 'search', ios: 'magnifyingglass' }}
-                size={tokens.control.iconSize + 2}
-                tintColor={colors.foreground}
-              />
-            </Pressable>
-          </RNHostView>
-        </Row>
-      </TabHeader>
+      <SearchRouteHeader
+        onSearch={() => setSearchVisible((visible) => !visible)}
+        searchAccessibilityLabel="Search subcategories"
+      />
 
       {searchVisible ? (
         <Column
@@ -232,6 +174,16 @@ export default function SubCategoriesScreen() {
                   <Row
                     key={subCategory.id}
                     alignment="center"
+                    onPress={() =>
+                      router.push({
+                        pathname:
+                          '/(tabs)/search/recipes/[categorySlug]/[subCategorySlug]',
+                        params: {
+                          categorySlug: category.slug,
+                          subCategorySlug: subCategory.slug,
+                        },
+                      })
+                    }
                     style={{
                       paddingVertical: tokens.spacing.md,
                       width: width - tokens.spacing.lg * 2,
@@ -278,10 +230,3 @@ export default function SubCategoriesScreen() {
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  headerButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

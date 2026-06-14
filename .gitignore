@@ -31,3 +31,6 @@ dist-ssr
 
 # typescript
 *.tsbuildinfo
+
+# Local source media; the compressed mobile version is tracked instead.
+apps/mobile/src/assets/videos/hero-video.mp4
