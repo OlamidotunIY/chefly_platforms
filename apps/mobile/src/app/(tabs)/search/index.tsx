@@ -1,7 +1,7 @@
 import { SymbolView } from 'expo-symbols';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 
 import { TabHeader } from '@/components/custom/TabHeader';
 import { useTheme } from '@/components/theme';
@@ -14,12 +14,10 @@ import {
   Row,
   Screen,
   ScrollView,
-  SearchBar,
   Spacer,
   Text,
 } from '@/components/ui';
 import { hydrateRecipeCategories } from '@/lib/recipe-categories';
-import { useDeviceDimensions } from '@/lib/device-dimensions';
 import { useCategoryStore } from '@chefly/store';
 
 type CategoryTab = 'categories' | 'interest';
@@ -35,21 +33,13 @@ const selectedInterests: Interest[] = [];
 const availableInterests: Interest[] = [];
 
 export default function SearchScreen() {
-  const { width } = useDeviceDimensions();
+  const { width } = useWindowDimensions();
   const { colors, tokens } = useTheme();
   const categories = useCategoryStore((state) => state.categories);
   const status = useCategoryStore((state) => state.status);
   const [activeTab, setActiveTab] = useState<CategoryTab>('categories');
-  const [query, setQuery] = useState('');
-  const [searchVisible, setSearchVisible] = useState(false);
-  const normalizedQuery = query.trim().toLowerCase();
 
-  const filteredCategories = categories.filter(
-    (category) =>
-      !normalizedQuery ||
-      category.name.toLowerCase().includes(normalizedQuery) ||
-      category.description.toLowerCase().includes(normalizedQuery),
-  );
+  const filteredCategories = categories;
   const selectedInterestIds = new Set(
     selectedInterests.map((interest) => interest.id),
   );
@@ -96,7 +86,7 @@ export default function SearchScreen() {
               accessibilityLabel="Search categories"
               accessibilityRole="button"
               hitSlop={tokens.spacing.sm}
-              onPress={() => setSearchVisible((visible) => !visible)}
+              onPress={() => router.push('/(app)/recipe-search')}
               style={[
                 styles.headerButton,
                 {
@@ -113,21 +103,6 @@ export default function SearchScreen() {
           </RNHostView>
         </Row>
       </TabHeader>
-
-      {searchVisible ? (
-        <Column
-          style={{
-            paddingHorizontal: tokens.spacing.lg,
-            paddingBottom: tokens.spacing.md,
-            width,
-          }}>
-          <SearchBar
-            onChangeText={setQuery}
-            placeholder="Search categories"
-            value={query}
-          />
-        </Column>
-      ) : null}
 
       <Row alignment="center" spacing={tokens.spacing.none} style={{ width }}>
         <Column

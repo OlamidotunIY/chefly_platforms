@@ -5,7 +5,10 @@ import { useTheme } from '@/components/theme';
 import { Screen } from '@/components/ui';
 
 export default function RecipeSearchResultsScreen() {
-  useLocalSearchParams<{ keyword: string }>();
+  useLocalSearchParams<{
+    keyword: string;
+    type?: 'chefs' | 'recipes';
+  }>();
   const { tokens } = useTheme();
 
   return (

@@ -1,10 +1,9 @@
 import { SymbolView } from 'expo-symbols';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 
 import { useTheme } from '@/components/theme';
 import { RNHostView, Row, Spacer } from '@/components/ui';
-import { useDeviceDimensions } from '@/lib/device-dimensions';
 
 import { TabHeader } from './TabHeader';
 
@@ -17,7 +16,7 @@ export function SearchRouteHeader({
   onSearch,
   searchAccessibilityLabel = 'Search recipes',
 }: SearchRouteHeaderProps) {
-  const { width } = useDeviceDimensions();
+  const { width } = useWindowDimensions();
   const { colors, tokens } = useTheme();
   const contentWidth = width - tokens.spacing.lg * 2;
 

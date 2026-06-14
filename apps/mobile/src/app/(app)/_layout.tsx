@@ -15,6 +15,7 @@ export default function AppScreensLayout() {
           presentation: 'modal',
         }}
       />
+      <Stack.Screen name="recipe-search" />
     </Stack>
   );
 }

@@ -1,6 +1,6 @@
 import { SymbolView } from 'expo-symbols';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 
 import { useTheme } from '@/components/theme';
 import {
@@ -12,7 +12,6 @@ import {
   ScrollView,
   Text,
 } from '@/components/ui';
-import { useDeviceDimensions } from '@/lib/device-dimensions';
 
 type Interest = {
   description: string;
@@ -23,7 +22,7 @@ type Interest = {
 const availableInterests: Interest[] = [];
 
 export default function ChooseInterestsScreen() {
-  const { height, width } = useDeviceDimensions();
+  const { height, width } = useWindowDimensions();
   const { colors, tokens } = useTheme();
   const closeButtonSize = 30;
   const bottomActionHeight =
