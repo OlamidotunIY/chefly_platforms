@@ -23,6 +23,16 @@ import { useCategoryStore } from '@chefly/store';
 
 type CategoryTab = 'categories' | 'interest';
 
+type Interest = {
+  description: string;
+  id: string;
+  name: string;
+  relatedInterestIds: string[];
+};
+
+const selectedInterests: Interest[] = [];
+const availableInterests: Interest[] = [];
+
 export default function SearchScreen() {
   const { width } = useWindowDimensions();
   const { colors, tokens } = useTheme();
@@ -39,6 +49,20 @@ export default function SearchScreen() {
       category.name.toLowerCase().includes(normalizedQuery) ||
       category.description.toLowerCase().includes(normalizedQuery),
   );
+  const selectedInterestIds = new Set(
+    selectedInterests.map((interest) => interest.id),
+  );
+  const relatedInterestIds = new Set(
+    selectedInterests.flatMap((interest) => interest.relatedInterestIds),
+  );
+  const suggestedInterests =
+    selectedInterests.length === 0
+      ? availableInterests
+      : availableInterests.filter(
+          (interest) =>
+            relatedInterestIds.has(interest.id) &&
+            !selectedInterestIds.has(interest.id),
+        );
 
   return (
     <Screen
@@ -176,18 +200,89 @@ export default function SearchScreen() {
         }}>
         {activeTab === 'interest' ? (
           <Column
-            spacing={tokens.spacing.sm}
+            spacing={tokens.spacing.xxl}
             style={{
-              paddingHorizontal: tokens.spacing.lg,
               paddingVertical: tokens.spacing.xxl,
               width,
             }}>
-            <Text textStyle={{ fontWeight: '700' }}>
-              Interests are coming soon
-            </Text>
-            <Text textStyle={{ color: colors.mutedForeground }}>
-              Interest data is not available yet.
-            </Text>
+            <Column
+              spacing={tokens.spacing.sm}
+              style={{
+                paddingHorizontal: tokens.spacing.lg,
+                width,
+              }}>
+              <Text
+                textStyle={{
+                  fontSize: tokens.typography.title,
+                  fontWeight: '700',
+                }}>
+                Your Interest
+              </Text>
+              {selectedInterests.length === 0 ? (
+                <>
+                  <Text textStyle={{ color: colors.mutedForeground }}>
+                    Choose your interest for a better discovery experience.
+                  </Text>
+                  <Button
+                    label="Choose Interest"
+                    onPress={() =>
+                      router.push('/(tabs)/search/choose-interests')
+                    }
+                    borderRadius={0}
+                    fullWidth
+                  />
+                </>
+              ) : (
+                selectedInterests.map((interest) => (
+                  <Column key={interest.id} spacing={tokens.spacing.none}>
+                    <Column
+                      spacing={tokens.spacing.xs}
+                      style={{
+                        paddingVertical: tokens.spacing.lg,
+                        width: width - tokens.spacing.lg * 2,
+                      }}>
+                      <Text textStyle={{ fontWeight: '700' }}>
+                        {interest.name}
+                      </Text>
+                      <Text textStyle={{ color: colors.mutedForeground }}>
+                        {interest.description}
+                      </Text>
+                    </Column>
+                    <Divider />
+                  </Column>
+                ))
+              )}
+            </Column>
+
+            <Column spacing={tokens.spacing.sm} style={{ width }}>
+              <Text
+                textStyle={{
+                  fontSize: tokens.typography.title,
+                  fontWeight: '700',
+                }}
+                style={{ paddingHorizontal: tokens.spacing.lg }}>
+                You may also like
+              </Text>
+              {suggestedInterests.map((interest) => (
+                <Column key={interest.id} spacing={tokens.spacing.none}>
+                  <Column
+                    spacing={tokens.spacing.xs}
+                    style={{
+                      paddingHorizontal: tokens.spacing.lg,
+                      paddingVertical: tokens.spacing.lg,
+                      width,
+                    }}>
+                    <Text textStyle={{ fontWeight: '700' }}>
+                      {interest.name}
+                    </Text>
+                    <Text textStyle={{ color: colors.mutedForeground }}>
+                      {interest.description}
+                    </Text>
+                  </Column>
+                  <Divider />
+                </Column>
+              ))}
+            </Column>
           </Column>
         ) : status === 'idle' || status === 'loading' ? (
           <Column
