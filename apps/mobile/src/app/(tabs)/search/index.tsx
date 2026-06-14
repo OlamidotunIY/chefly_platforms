@@ -1,7 +1,7 @@
 import { SymbolView } from 'expo-symbols';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
 import { TabHeader } from '@/components/custom/TabHeader';
 import { useTheme } from '@/components/theme';
@@ -19,6 +19,7 @@ import {
   Text,
 } from '@/components/ui';
 import { hydrateRecipeCategories } from '@/lib/recipe-categories';
+import { useDeviceDimensions } from '@/lib/device-dimensions';
 import { useCategoryStore } from '@chefly/store';
 
 type CategoryTab = 'categories' | 'interest';
@@ -34,7 +35,7 @@ const selectedInterests: Interest[] = [];
 const availableInterests: Interest[] = [];
 
 export default function SearchScreen() {
-  const { width } = useWindowDimensions();
+  const { width } = useDeviceDimensions();
   const { colors, tokens } = useTheme();
   const categories = useCategoryStore((state) => state.categories);
   const status = useCategoryStore((state) => state.status);

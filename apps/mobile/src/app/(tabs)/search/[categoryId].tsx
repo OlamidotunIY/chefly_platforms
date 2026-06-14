@@ -1,7 +1,6 @@
 import { SymbolView } from 'expo-symbols';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { useWindowDimensions } from 'react-native';
 
 import { SearchRouteHeader } from '@/components/custom/SearchRouteHeader';
 import { useTheme } from '@/components/theme';
@@ -18,11 +17,12 @@ import {
   Text,
 } from '@/components/ui';
 import { hydrateRecipeCategories } from '@/lib/recipe-categories';
+import { useDeviceDimensions } from '@/lib/device-dimensions';
 import { useCategoryStore } from '@chefly/store';
 
 export default function SubCategoriesScreen() {
   const { categoryId } = useLocalSearchParams<{ categoryId: string }>();
-  const { width } = useWindowDimensions();
+  const { width } = useDeviceDimensions();
   const { colors, tokens } = useTheme();
   const categories = useCategoryStore((state) => state.categories);
   const status = useCategoryStore((state) => state.status);

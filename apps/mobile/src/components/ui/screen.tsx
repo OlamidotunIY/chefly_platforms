@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, View, useWindowDimensions, type ViewProps } from 'react-native';
+import { StyleSheet, View, type ViewProps } from 'react-native';
 
+import { useDeviceDimensions } from '@/lib/device-dimensions';
 import { useTheme } from '../theme';
 import { Column } from './column';
 import { Host } from './host';
@@ -24,7 +25,7 @@ export function Screen({
   style,
   ...props
 }: ScreenProps) {
-  const { height, width } = useWindowDimensions();
+  const { height, width } = useDeviceDimensions();
   const { colors, tokens } = useTheme();
   const backgroundColor = contentBackgroundColor ?? colors.background;
 
