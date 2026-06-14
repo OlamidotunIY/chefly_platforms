@@ -1,8 +1,16 @@
 import { useTheme } from '@/components/theme';
+import { hydrateRecipeCategories } from '@/lib/recipe-categories';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { useEffect } from 'react';
 
 export default function TabsLayout() {
   const { colors, tokens } = useTheme();
+
+  useEffect(() => {
+    void hydrateRecipeCategories().catch((error) => {
+      console.error('Unable to hydrate recipe categories:', error);
+    });
+  }, []);
 
   return (
     <NativeTabs
@@ -31,7 +39,7 @@ export default function TabsLayout() {
           md={{ default: 'auto_awesome', selected: 'auto_awesome' }}
           sf={{ default: 'sparkles', selected: 'sparkles' }}
         />
-        <NativeTabs.Trigger.Label>Features</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>Featured</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="messages">

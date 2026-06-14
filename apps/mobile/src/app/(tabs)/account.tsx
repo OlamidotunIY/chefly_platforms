@@ -1,3 +1,4 @@
+import { TabHeader } from '@/components/custom/TabHeader';
 import { useTheme } from '@/components/theme';
 import { Button, Screen, Text } from '@/components/ui';
 import { authClient } from '@/lib/auth-client';
@@ -7,7 +8,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 
 export default function AccountScreen() {
-  const { colors, tokens } = useTheme();
+  const { colors } = useTheme();
   const user = useUserStore((state) => state.user);
   const [isSigningOut, setIsSigningOut] = useState(false);
 
@@ -26,13 +27,10 @@ export default function AccountScreen() {
 
   return (
     <Screen>
-      <Text
-        textStyle={{
-          fontSize: tokens.typography.headline,
-          fontWeight: '700',
-        }}>
-        Account
-      </Text>
+      <TabHeader
+        subtitle="Manage your profile and account settings."
+        title="Account"
+      />
       <Text textStyle={{ color: colors.foreground }}>
         {user?.displayUsername || user?.username || user?.name || 'Chefly user'}
       </Text>
