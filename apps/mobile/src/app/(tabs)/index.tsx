@@ -4,7 +4,7 @@ import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useTheme } from '@/components/theme';
 import { Logo } from '@/components/custom/Logo';
 import { TabHeader } from '@/components/custom/TabHeader';
-import { Button, RNHostView, Screen, ScrollView } from '@/components/ui';
+import { RNHostView, Screen, ScrollView } from '@/components/ui';
 
 export default function FeaturedScreen() {
   const { width } = useWindowDimensions();
@@ -21,34 +21,27 @@ export default function FeaturedScreen() {
             height: 52,
             width: contentWidth,
           }}>
-          <View style={styles.headerRow}>
-            <Logo size={46} />
+          <View
+            style={[
+              styles.headerRow,
+              {
+                height: 52,
+                width: contentWidth,
+              },
+            ]}>
+            <Logo size={64} />
 
             <View style={[styles.headerActions, { gap: tokens.spacing.md }]}>
-              <View
-                style={[
-                  styles.iconContainer,
-                  {
-                    backgroundColor: colors.secondary,
-                    borderRadius: tokens.radius.full,
-                  },
-                ]}>
+              <View style={styles.iconContainer}>
                 <SymbolView
                   name={{ android: 'shopping_cart', ios: 'cart' }}
                   size={tokens.control.iconSize}
                   tintColor={colors.foreground}
                 />
               </View>
-              <View
-                style={[
-                  styles.iconContainer,
-                  {
-                    backgroundColor: colors.secondary,
-                    borderRadius: tokens.radius.full,
-                  },
-                ]}>
+              <View style={styles.iconContainer}>
                 <SymbolView
-                  name={{ android: 'category', ios: 'square.grid.2x2' }}
+                  name={{ android: 'dashboard', ios: 'square.grid.2x2.fill' }}
                   size={tokens.control.iconSize}
                   tintColor={colors.foreground}
                 />
@@ -64,7 +57,7 @@ export default function FeaturedScreen() {
           backgroundColor: colors.background,
           width: contentWidth,
         }}>
-        <Button label="Explore recipes" />
+        
       </ScrollView>
     </Screen>
   );
@@ -77,14 +70,11 @@ const styles = StyleSheet.create({
   },
   headerRow: {
     alignItems: 'center',
-    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   iconContainer: {
     alignItems: 'center',
-    height: 40,
     justifyContent: 'center',
-    width: 40,
   },
 });

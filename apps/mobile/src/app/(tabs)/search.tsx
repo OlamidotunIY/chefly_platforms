@@ -1,21 +1,263 @@
-import { TabHeader } from '@/components/custom/TabHeader';
-import { Screen, SearchBar } from '@/components/ui';
+import { SymbolView } from 'expo-symbols';
 import { useState } from 'react';
+import { Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+
+import { TabHeader } from '@/components/custom/TabHeader';
+import { useTheme } from '@/components/theme';
+import {
+  Button,
+  Column,
+  Divider,
+  Progress,
+  RNHostView,
+  Row,
+  Screen,
+  ScrollView,
+  SearchBar,
+  Spacer,
+  Text,
+} from '@/components/ui';
+import { hydrateRecipeCategories } from '@/lib/recipe-categories';
+import { useCategoryStore } from '@chefly/store';
+
+type CategoryTab = 'categories' | 'interest';
 
 export default function SearchScreen() {
+  const { width } = useWindowDimensions();
+  const { colors, tokens } = useTheme();
+  const categories = useCategoryStore((state) => state.categories);
+  const status = useCategoryStore((state) => state.status);
+  const [activeTab, setActiveTab] = useState<CategoryTab>('categories');
   const [query, setQuery] = useState('');
+  const [searchVisible, setSearchVisible] = useState(false);
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const filteredCategories = categories.filter(
+    (category) =>
+      !normalizedQuery ||
+      category.name.toLowerCase().includes(normalizedQuery) ||
+      category.description.toLowerCase().includes(normalizedQuery),
+  );
 
   return (
-    <Screen>
+    <Screen
+      contentPaddingHorizontal={tokens.spacing.none}
+      spacing={tokens.spacing.none}>
       <TabHeader
-        subtitle="Find recipes, ingredients, creators, and collections."
-        title="Search"
-      />
-      <SearchBar
-        onChangeText={setQuery}
-        placeholder="Search recipes and ingredients"
-        value={query}
-      />
+        position="fixed"
+        style={{
+          paddingHorizontal: tokens.spacing.lg,
+          width,
+        }}>
+        <Row alignment="center" style={{ width: width - tokens.spacing.lg * 2 }}>
+          <Text
+            textStyle={{
+              color: colors.foreground,
+              fontSize: tokens.typography.headline,
+              fontWeight: '700',
+            }}>
+            Categories
+          </Text>
+          <Spacer flexible />
+          <RNHostView
+            matchContents
+            style={{
+              backgroundColor: colors.transparent,
+              height: tokens.control.touchTarget,
+              width: tokens.control.touchTarget,
+            }}>
+            <Pressable
+              accessibilityLabel="Search categories"
+              accessibilityRole="button"
+              hitSlop={tokens.spacing.sm}
+              onPress={() => setSearchVisible((visible) => !visible)}
+              style={[
+                styles.searchButton,
+                {
+                  height: tokens.control.touchTarget,
+                  width: tokens.control.touchTarget,
+                },
+              ]}>
+              <SymbolView
+                name={{ android: 'search', ios: 'magnifyingglass' }}
+                size={tokens.control.iconSize + 2}
+                tintColor={colors.foreground}
+              />
+            </Pressable>
+          </RNHostView>
+        </Row>
+      </TabHeader>
+
+      {searchVisible ? (
+        <Column
+          style={{
+            paddingHorizontal: tokens.spacing.lg,
+            paddingBottom: tokens.spacing.md,
+            width,
+          }}>
+          <SearchBar
+            onChangeText={setQuery}
+            placeholder="Search categories"
+            value={query}
+          />
+        </Column>
+      ) : null}
+
+      <Row alignment="center" spacing={tokens.spacing.none} style={{ width }}>
+        <Column
+          alignment="center"
+          onPress={() => setActiveTab('categories')}
+          spacing={tokens.spacing.md}
+          style={{
+            paddingTop: tokens.spacing.md,
+            width: width / 2,
+          }}>
+          <Text
+            textStyle={{
+              color:
+                activeTab === 'categories'
+                  ? colors.primary
+                  : colors.mutedForeground,
+              fontWeight: '600',
+              textAlign: 'center',
+            }}>
+            Categories
+          </Text>
+          <Column
+            style={{
+              backgroundColor:
+                activeTab === 'categories'
+                  ? colors.primary
+                  : colors.transparent,
+              height: tokens.border.strong,
+              width: width / 2,
+            }}
+          />
+        </Column>
+        <Column
+          alignment="center"
+          onPress={() => setActiveTab('interest')}
+          spacing={tokens.spacing.md}
+          style={{
+            paddingTop: tokens.spacing.md,
+            width: width / 2,
+          }}>
+          <Text
+            textStyle={{
+              color:
+                activeTab === 'interest'
+                  ? colors.primary
+                  : colors.mutedForeground,
+              fontWeight: '600',
+              textAlign: 'center',
+            }}>
+            Interests
+          </Text>
+          <Column
+            style={{
+              backgroundColor:
+                activeTab === 'interest'
+                  ? colors.primary
+                  : colors.transparent,
+              height: tokens.border.strong,
+              width: width / 2,
+            }}
+          />
+        </Column>
+      </Row>
+      <Divider />
+
+      <ScrollView
+        showsIndicators={false}
+        style={{
+          backgroundColor: colors.background,
+          width,
+        }}>
+        {activeTab === 'interest' ? (
+          <Column
+            spacing={tokens.spacing.sm}
+            style={{
+              paddingHorizontal: tokens.spacing.lg,
+              paddingVertical: tokens.spacing.xxl,
+              width,
+            }}>
+            <Text textStyle={{ fontWeight: '700' }}>
+              Interests are coming soon
+            </Text>
+            <Text textStyle={{ color: colors.mutedForeground }}>
+              Interest data is not available yet.
+            </Text>
+          </Column>
+        ) : status === 'idle' || status === 'loading' ? (
+          <Column
+            style={{
+              paddingHorizontal: tokens.spacing.lg,
+              paddingVertical: tokens.spacing.xxl,
+              width,
+            }}>
+            <Progress label="Loading categories" variant="circular" />
+          </Column>
+        ) : status === 'error' ? (
+          <Column
+            spacing={tokens.spacing.md}
+            style={{
+              paddingHorizontal: tokens.spacing.lg,
+              paddingVertical: tokens.spacing.xxl,
+              width,
+            }}>
+            <Text textStyle={{ color: colors.destructive }}>
+              Categories could not be loaded.
+            </Text>
+            <Button
+              label="Try again"
+              onPress={() => {
+                void hydrateRecipeCategories(true).catch(() => undefined);
+              }}
+              variant="outlined"
+            />
+          </Column>
+        ) : (
+          <Column spacing={tokens.spacing.none} style={{ width }}>
+            {filteredCategories.map((category) => (
+              <Column key={category.id} spacing={tokens.spacing.none}>
+                <Column
+                  spacing={tokens.spacing.xs}
+                  style={{
+                    paddingHorizontal: tokens.spacing.lg,
+                    paddingVertical: tokens.spacing.lg,
+                    width,
+                  }}>
+                  <Text textStyle={{ fontWeight: '700' }}>{category.name}</Text>
+                  <Text textStyle={{ color: colors.mutedForeground }}>
+                    {category.description ||
+                      `Explore recipes in ${category.name}.`}
+                  </Text>
+                </Column>
+                <Divider />
+              </Column>
+            ))}
+            {filteredCategories.length === 0 ? (
+              <Column
+                style={{
+                  paddingHorizontal: tokens.spacing.lg,
+                  paddingVertical: tokens.spacing.xxl,
+                  width,
+                }}>
+                <Text textStyle={{ color: colors.mutedForeground }}>
+                  No categories match your search.
+                </Text>
+              </Column>
+            ) : null}
+          </Column>
+        )}
+      </ScrollView>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  searchButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

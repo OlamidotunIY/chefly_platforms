@@ -9,6 +9,8 @@ export type ScreenProps = ViewProps & {
   background?: ReactNode;
   children?: ReactNode;
   contentBackgroundColor?: string;
+  contentPaddingHorizontal?: number;
+  contentPaddingVertical?: number;
   spacing?: number;
 };
 
@@ -16,6 +18,8 @@ export function Screen({
   background,
   children,
   contentBackgroundColor,
+  contentPaddingHorizontal,
+  contentPaddingVertical,
   spacing,
   style,
   ...props
@@ -42,8 +46,10 @@ export function Screen({
           style={{
             width,
             height,
-            paddingHorizontal: tokens.spacing.lg,
-            paddingVertical: tokens.spacing.xxxl,
+            paddingHorizontal:
+              contentPaddingHorizontal ?? tokens.spacing.lg,
+            paddingVertical:
+              contentPaddingVertical ?? tokens.spacing.xxxl,
             backgroundColor,
           }}>
           {children}
