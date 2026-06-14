@@ -1,4 +1,5 @@
 import { SymbolView } from 'expo-symbols';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 
@@ -72,7 +73,7 @@ export default function SearchScreen() {
               hitSlop={tokens.spacing.sm}
               onPress={() => setSearchVisible((visible) => !visible)}
               style={[
-                styles.searchButton,
+                styles.headerButton,
                 {
                   height: tokens.control.touchTarget,
                   width: tokens.control.touchTarget,
@@ -221,6 +222,12 @@ export default function SearchScreen() {
             {filteredCategories.map((category) => (
               <Column key={category.id} spacing={tokens.spacing.none}>
                 <Column
+                  onPress={() =>
+                    router.push({
+                      pathname: '/(tabs)/search/[categoryId]',
+                      params: { categoryId: category.id },
+                    })
+                  }
                   spacing={tokens.spacing.xs}
                   style={{
                     paddingHorizontal: tokens.spacing.lg,
@@ -256,7 +263,7 @@ export default function SearchScreen() {
 }
 
 const styles = StyleSheet.create({
-  searchButton: {
+  headerButton: {
     alignItems: 'center',
     justifyContent: 'center',
   },
