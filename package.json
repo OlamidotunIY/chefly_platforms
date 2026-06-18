@@ -8,6 +8,13 @@
     "build": "turbo build",
     "dev:web": "pnpm --filter @chefly/web dev",
     "dev:mobile": "pnpm --filter @chefly/mobile dev",
+    "dev:mobile:go": "pnpm --filter @chefly/mobile dev:go",
+    "dev:mobile:tunnel": "pnpm --filter @chefly/mobile dev:tunnel",
+    "mobile:android": "pnpm --filter @chefly/mobile android",
+    "mobile:ios": "pnpm --filter @chefly/mobile ios",
+    "mobile:build:dev:android": "pnpm --filter @chefly/mobile build:dev:android",
+    "mobile:build:dev:ios": "pnpm --filter @chefly/mobile build:dev:ios",
+    "mobile:build:dev:ios-sim": "pnpm --filter @chefly/mobile build:dev:ios-sim",
     "lint": "turbo lint",
     "format": "turbo format",
     "typecheck": "turbo typecheck"
