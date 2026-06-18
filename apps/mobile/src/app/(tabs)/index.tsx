@@ -1,15 +1,21 @@
 import { SymbolView } from 'expo-symbols';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 
-import { useTheme } from '@/components/theme';
 import { Logo } from '@/components/custom/Logo';
 import { TabHeader } from '@/components/custom/TabHeader';
-import { RNHostView, Screen, ScrollView } from '@/components/ui';
+import { useTheme } from '@/components/theme';
+import { Column, RNHostView, Screen, ScrollView, Text } from '@/components/ui';
+import { add, getEngineInfo } from 'reels-engine';
 
-export default function FeaturedScreen() {
+
+export default function FeaturedScreen()
+{
   const { width } = useWindowDimensions();
   const { colors, tokens } = useTheme();
   const contentWidth = width - tokens.spacing.lg * 2;
+  const info = getEngineInfo();
+  const result = add(10, 25);
+
 
   return (
     <Screen>
@@ -57,7 +63,30 @@ export default function FeaturedScreen() {
           backgroundColor: colors.background,
           width: contentWidth,
         }}>
-        
+        <Column
+          alignment="center"
+          spacing={tokens.spacing.md}
+          style={{
+            backgroundColor: colors.background,
+            height: 160,
+            paddingHorizontal: tokens.spacing.xl,
+            width: contentWidth,
+          }}>
+          <>
+            <Text
+              textStyle={{
+                color: colors.foreground,
+                fontSize: 18,
+                fontWeight: '700',
+                textAlign: 'center',
+              }}>
+              {info}
+            </Text>
+            <Text textStyle={{ color: colors.foreground }}>
+              {`10 + 25 = ${result}`}
+            </Text>
+          </>
+        </Column>
       </ScrollView>
     </Screen>
   );
