@@ -1,6 +1,14 @@
 import { RNHostView } from '@/components/ui';
+import { authClient } from '@/lib/auth-client';
 import { Image } from 'expo-image';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { useTheme } from '../theme';
 
@@ -19,7 +27,39 @@ export function SocialAuthButtons({
   width,
 }: SocialAuthButtonsProps) {
   const { colors, tokens } = useTheme();
-  const sectionHeight = tokens.control.height + tokens.spacing.xl + tokens.typography.body;
+  const [googlePending, setGooglePending] = useState(false);
+  const [socialError, setSocialError] = useState<string | null>(null);
+  const sectionHeight =
+    tokens.control.height +
+    tokens.spacing.xl +
+    tokens.typography.body +
+    (socialError ? tokens.spacing.lg + tokens.typography.body : 0);
+
+  async function handleGooglePress() {
+    if (onGooglePress) {
+      onGooglePress();
+      return;
+    }
+
+    setGooglePending(true);
+    setSocialError(null);
+
+    try {
+      const result = await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: '/',
+        errorCallbackURL: '/(auth)',
+      });
+
+      if (result?.error) {
+        setSocialError(result.error.message ?? 'Unable to continue with Google.');
+      }
+    } catch {
+      setSocialError('Unable to continue with Google.');
+    } finally {
+      setGooglePending(false);
+    }
+  }
 
   return (
     <RNHostView
@@ -28,7 +68,6 @@ export function SocialAuthButtons({
         backgroundColor: colors.transparent,
         height: sectionHeight,
         width,
-        
       }}>
       <View
         style={[
@@ -59,7 +98,8 @@ export function SocialAuthButtons({
             borderColor={colors.border}
             icon={googleIcon}
             label="Google"
-            onPress={onGooglePress}
+            loading={googlePending}
+            onPress={() => void handleGooglePress()}
             textColor={colors.foreground}
           />
           <SocialButton
@@ -71,6 +111,13 @@ export function SocialAuthButtons({
             textColor={colors.foreground}
           />
         </View>
+        {socialError ? (
+          <Text
+            accessibilityRole="alert"
+            style={[styles.error, { color: colors.destructive }]}>
+            {socialError}
+          </Text>
+        ) : null}
       </View>
     </RNHostView>
   );
@@ -81,6 +128,7 @@ type SocialButtonProps = {
   icon: number;
   iconColor?: string;
   label: string;
+  loading?: boolean;
   onPress?: () => void;
   textColor: string;
 };
@@ -90,6 +138,7 @@ function SocialButton({
   icon,
   iconColor,
   label,
+  loading = false,
   onPress,
   textColor,
 }: SocialButtonProps) {
@@ -97,19 +146,25 @@ function SocialButton({
     <Pressable
       accessibilityLabel={`Continue with ${label}`}
       accessibilityRole="button"
+      accessibilityState={{ busy: loading, disabled: loading }}
+      disabled={loading}
       onPress={onPress}
       style={({ pressed }) => [
         styles.button,
         {
           borderColor,
-          opacity: pressed ? 0.72 : 1,
+          opacity: pressed || loading ? 0.72 : 1,
         },
       ]}>
-      <Image
-        contentFit="contain"
-        source={icon}
-        style={[styles.icon, iconColor ? { tintColor: iconColor } : undefined]}
-      />
+      {loading ? (
+        <ActivityIndicator color={textColor} size="small" style={styles.icon} />
+      ) : (
+        <Image
+          contentFit="contain"
+          source={icon}
+          style={[styles.icon, iconColor ? { tintColor: iconColor } : undefined]}
+        />
+      )}
       <Text style={[styles.label, { color: textColor }]}>{label}</Text>
     </Pressable>
   );
@@ -137,6 +192,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
     width: '100%',
+  },
+  error: {
+    fontSize: 14,
+    textAlign: 'center',
   },
   icon: {
     height: 22,

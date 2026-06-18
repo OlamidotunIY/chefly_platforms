@@ -27,6 +27,11 @@ function resolveApiBaseUrl(): string {
 
 export const apiBaseUrl = resolveApiBaseUrl();
 
+const configuredScheme = Constants.expoConfig?.scheme;
+const appScheme = Array.isArray(configuredScheme)
+  ? configuredScheme[0]
+  : (configuredScheme ?? 'mise');
+
 client.setConfig({
   baseUrl: apiBaseUrl,
   credentials: 'include',
@@ -36,7 +41,7 @@ export const authClient = createAuthClient({
   baseURL: apiBaseUrl,
   plugins: [
     expoClient({
-      scheme: 'mobile',
+      scheme: appScheme,
       storage: SecureStore,
       storagePrefix: 'chefly',
     }),

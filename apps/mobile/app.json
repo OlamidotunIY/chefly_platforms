@@ -50,8 +50,9 @@
     "extra": {
       "router": {},
       "eas": {
-
+        "projectId": "27254fc8-4896-47e4-9fbe-2b80febff001"
       }
-    }
+    },
+    "owner": "axora-agency"
   }
 }

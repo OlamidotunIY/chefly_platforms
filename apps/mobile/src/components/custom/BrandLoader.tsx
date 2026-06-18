@@ -4,6 +4,7 @@ import Animated, {
   Easing,
   cancelAnimation,
   useAnimatedStyle,
+  useReducedMotion,
   useSharedValue,
   withDelay,
   withRepeat,
@@ -28,6 +29,7 @@ type LoaderDotProps = {
 };
 
 function LoaderDot({ angle, color, delay, size }: LoaderDotProps) {
+  const reducedMotion = useReducedMotion();
   const pulse = useSharedValue(0.45);
   const dotSize = size * 0.16;
   const radius = size * 0.32;
@@ -36,6 +38,11 @@ function LoaderDot({ angle, color, delay, size }: LoaderDotProps) {
   const top = size / 2 + Math.sin(radians) * radius - dotSize / 2;
 
   useEffect(() => {
+    if (reducedMotion) {
+      pulse.value = 1;
+      return;
+    }
+
     pulse.value = withDelay(
       delay,
       withRepeat(
@@ -56,7 +63,7 @@ function LoaderDot({ angle, color, delay, size }: LoaderDotProps) {
     return () => {
       cancelAnimation(pulse);
     };
-  }, [delay, pulse]);
+  }, [delay, pulse, reducedMotion]);
 
   const pulseStyle = useAnimatedStyle(() => ({
     opacity: 0.35 + pulse.value * 0.65,
