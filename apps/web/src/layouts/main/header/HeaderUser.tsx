@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { authClient } from "@chefly/api"
 import { useUserStore } from "@chefly/store"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { AuthButtons, toast, UserMenu } from "@workspace/ui/components"
 
 import { useTheme } from "@/components"
@@ -9,17 +9,11 @@ import { PATHS } from "@/routing"
 
 export const HeaderUser = () =>
 {
-  const location = useLocation()
   const navigate = useNavigate()
   const session = authClient.useSession()
   const { setTheme, theme } = useTheme()
-  const setHydratedSessionId = useUserStore(
-    (state) => state.setHydratedSessionId,
-  )
-  const setStatus = useUserStore((state) => state.setStatus)
-  const setUser = useUserStore((state) => state.setUser)
+  const {setHydratedSessionId, setStatus, setUser} = useUserStore()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
-  const authState = { from: location }
 
   const handleLogout = async () =>
   {
@@ -68,10 +62,7 @@ export const HeaderUser = () =>
           onThemeChange={setTheme}
         />
       ) : (
-        <AuthButtons
-          onJoin={() => navigate(PATHS.auth.signup, { state: authState })}
-          onSignIn={() => navigate(PATHS.auth.login, { state: authState })}
-        />
+          <AuthButtons />
       )}
     </div>
   )

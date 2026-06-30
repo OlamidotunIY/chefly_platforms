@@ -2,16 +2,17 @@ import { useEffect } from "react"
 import { Outlet } from "react-router-dom"
 
 import
-    {
-        authClient,
-        getCurrentUser,
-        getRecipeCategory,
-    } from "@chefly/api"
+{
+    authClient,
+    getCurrentUser,
+    getRecipeCategory,
+} from "@chefly/api"
 import { useCategoryStore, useUserStore } from "@chefly/store"
 
 import { Header } from './header/MainHeader'
 import { MainCategory } from "./category/MainCategory"
 import { useDocumentTitle } from "@/components"
+import { AuthPage } from "@/features/auth"
 
 const USER_LOAD_ATTEMPTS = 3
 const USER_LOAD_RETRY_DELAY_MS = 500
@@ -183,6 +184,7 @@ export const RootLayout = () =>
                 </div>
             </div>
             <Outlet />
+            <AuthPage />
         </div>
     )
 }

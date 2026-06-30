@@ -1,24 +1,34 @@
+import { stateType, useAuthStore } from "@chefly/store"
 import { Button } from "../button"
 
-interface AuthButtonsProps
+export const AuthButtons = () =>
 {
-    onJoin: () => void
-    onSignIn: () => void
-}
 
-export const AuthButtons = ({ onJoin, onSignIn }: AuthButtonsProps) =>
-{
+    const { changeOpenState, changeState, open } = useAuthStore()
+
+    const handleClick = (state: stateType) =>
+    {
+        changeOpenState(!open)
+        changeState(state)
+    }
+
     return (
         <div className="flex flex-row space-x-3">
-            <Button className="h-12 w-24" onClick={onJoin}>
-                Join
+            <Button className="h-12 w-24" variant="outline" onClick={() =>
+            {
+                handleClick("sign-in")
+            }}>
+                Sign in
             </Button>
             <Button
                 className="h-12 w-24"
-                onClick={onSignIn}
-                variant="outline"
+                onClick={() =>
+                {
+                    handleClick("sign-up")
+                }}
+
             >
-                Sign In
+                Join
             </Button>
         </div>
     )

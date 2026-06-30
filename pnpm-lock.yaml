@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@react-native/gradle-plugin@0.85.3':
+    hash: 5e69848509ebda0b245db2c524297aa0a33d18e7fdb51f3e254cf1d6d2332882
+    path: patches/react-native-gradle-plugin@0.85.3.patch
+
 importers:
 
   .:
@@ -9485,7 +9490,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@react-native/gradle-plugin@0.85.3': {}
+  '@react-native/gradle-plugin@0.85.3(patch_hash=5e69848509ebda0b245db2c524297aa0a33d18e7fdb51f3e254cf1d6d2332882)': {}
 
   '@react-native/js-polyfills@0.85.3': {}
 
@@ -13331,7 +13336,7 @@ snapshots:
       '@react-native/assets-registry': 0.85.3
       '@react-native/codegen': 0.85.3(@babel/core@7.29.7)
       '@react-native/community-cli-plugin': 0.85.3(@react-native/metro-config@0.85.3(@babel/core@7.29.7))
-      '@react-native/gradle-plugin': 0.85.3
+      '@react-native/gradle-plugin': 0.85.3(patch_hash=5e69848509ebda0b245db2c524297aa0a33d18e7fdb51f3e254cf1d6d2332882)
       '@react-native/js-polyfills': 0.85.3
       '@react-native/normalize-colors': 0.85.3
       '@react-native/virtualized-lists': 0.85.3(@types/react@19.2.15)(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.15)(react@19.2.3))(react@19.2.3)
@@ -13376,7 +13381,7 @@ snapshots:
       '@react-native/assets-registry': 0.85.3
       '@react-native/codegen': 0.85.3(@babel/core@7.29.7)
       '@react-native/community-cli-plugin': 0.85.3(@react-native/metro-config@0.85.3(@babel/core@7.29.7))
-      '@react-native/gradle-plugin': 0.85.3
+      '@react-native/gradle-plugin': 0.85.3(patch_hash=5e69848509ebda0b245db2c524297aa0a33d18e7fdb51f3e254cf1d6d2332882)
       '@react-native/js-polyfills': 0.85.3
       '@react-native/normalize-colors': 0.85.3
       '@react-native/virtualized-lists': 0.85.3(@types/react@19.2.15)(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)

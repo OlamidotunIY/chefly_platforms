@@ -28,5 +28,10 @@
   "packageManager": "pnpm@10.33.4",
   "engines": {
     "node": ">=20"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@react-native/gradle-plugin@0.85.3": "patches/react-native-gradle-plugin@0.85.3.patch"
+    }
   }
 }
